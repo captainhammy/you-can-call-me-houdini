@@ -1,0 +1,42 @@
+{
+    "version": 1,
+
+    "formatters": {
+		"default": {
+			"format": "%(asctime)s %(levelname)-8s %(name)s | %(module)s.%(funcName)s:%(lineno)d: %(message)s",
+			"datefmt": "%H:%M:%S"
+		},
+		"event": {
+			"format": "%(asctime)s %(levelname)-8s %(message)s",
+			"datefmt": "%H:%M:%S"
+		}
+    },
+
+	"handlers": {
+		"console": {
+			"class": "logging.StreamHandler",
+			"level": "DEBUG",
+			"formatter": "default",
+			"stream": "ext://sys.stdout"
+		},
+		"event_console": {
+			"class": "logging.StreamHandler",
+			"level": "DEBUG",
+			"formatter": "event",
+			"stream": "ext://sys.stdout"
+		}
+    },
+
+    "loggers": {
+		"you_can_call_me_houdini": {
+			"level": "INFO",
+			"handlers": ["console"],
+			"propagate": false
+		},
+		"you_can_call_me_houdini.api.event": {
+			"level": "INFO",
+			"handlers": ["event_console"],
+			"propagate": false
+		}
+    }
+}
