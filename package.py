@@ -29,6 +29,7 @@ build_system = "cmake"
 variants = [
      ["houdini-19.5"],
      ["houdini-20.0"],
+     ["houdini-20.5"],
  ]
 
 tests = {
