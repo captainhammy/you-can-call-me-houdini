@@ -1,8 +1,10 @@
 """Tests for the you_can_call_me_houdini.api.manager module."""
 
+# Standard Library
+from contextlib import nullcontext
+
 # Third Party
 import pytest
-import pytest_houdini.tools
 
 # You Can Call Me Houdini
 from you_can_call_me_houdini.api import event, manager
@@ -84,19 +86,19 @@ class TestCallbackManager:
         (
             (pytest.raises(TypeError), None, True, False),
             (
-                pytest_houdini.tools.does_not_raise(),
+                nullcontext(),
                 HoudiniSessionEvent.NewScene,
                 False,
                 False,
             ),
             (
-                pytest_houdini.tools.does_not_raise(),
+                nullcontext(),
                 HoudiniSessionEvent.NewScene,
                 True,
                 False,
             ),
             (
-                pytest_houdini.tools.does_not_raise(),
+                nullcontext(),
                 HoudiniSessionEvent.NewScene,
                 True,
                 True,
