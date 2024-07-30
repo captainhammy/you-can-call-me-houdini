@@ -11,7 +11,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        houdini-version: ["20.5", "20.0", "19.5"]
+        houdini-version: ["20.0", "19.5"]
     container:
       image: captainhammy/hython-runner:${{ matrix.houdini-version }}
 
