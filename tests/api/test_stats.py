@@ -25,7 +25,7 @@ class TestEventStats:
 
         assert inst.last_started > 0
 
-    @pytest.mark.parametrize("print_report", (False, True))
+    @pytest.mark.parametrize("print_report", [False, True])
     def test___exit__(self, mocker, print_report):
         """Test EventStats.__exit__()."""
         mock_print = mocker.patch.object(stats.EventStats, "print_report")

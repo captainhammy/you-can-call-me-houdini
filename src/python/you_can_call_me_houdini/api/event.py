@@ -19,9 +19,7 @@ event_logger = logging.getLogger(__name__)
 class HoudiniEventEnum(Enum):
     """Subclass for Houdini event enums."""
 
-    def log_message(
-        self, function: Callable, callback_args: dict  # pylint: disable=W0613
-    ) -> None:
+    def log_message(self, function: Callable, callback_args: dict) -> None:
         """Log a callback call for the function and args.
 
         Args:
@@ -43,7 +41,6 @@ class HoudiniNodeEventEnum(HoudiniEventEnum):
         Args:
             function: The callback function.
             callback_args: The callback args.
-
         """
         event_logger.debug(
             "%s: %s '%s'",

@@ -20,8 +20,8 @@ def version() -> str:
 authors = ["graham thompson"]
 
 requires = [
-    "houdini",
     "humanfriendly",
+    "python_singleton",
 ]
 
 build_system = "cmake"
@@ -35,38 +35,8 @@ variants = [
 tests = {
     "unit": {
         "command": "coverage erase && hython -m pytest tests",
-        "requires": ["houdini", "pytest", "pytest_sugar", "coverage"],
-    },
-    "flake8": {
-        "command": "houdini_package_flake8",
-        "requires": ["houdini_package_runner", "houdini"],
-        "run_on": "explicit",
-    },
-    "black-check": {
-        "command": "houdini_package_black --check",
-        "requires": ["houdini_package_runner", "houdini"],
-        "run_on": "explicit",
-    },
-    "black": {
-        "command": "houdini_package_black",
-        "requires": ["houdini_package_runner", "houdini"],
-        "run_on": "explicit",
-    },
-    "pylint": {
-        "command": "houdini_package_pylint --skip-tests --rcfile pylintrc",
-        "requires": ["houdini_package_runner", "houdini"],
-        "run_on": "explicit",
-    },
-    "isort-check": {
-        "command": "houdini_package_isort --check --diff --package-names=houdini_toolbox",
-        "requires": ["houdini_package_runner", "houdini"],
-        "run_on": "explicit",
-    },
-    "isort": {
-        "command": "houdini_package_isort --package-names=houdini_toolbox",
-        "requires": ["houdini_package_runner", "houdini"],
-        "run_on": "explicit",
-    },
+        "requires": ["pytest", "pytest_sugar", "coverage", "pytest_mock", "pytest_houdini"],
+    }
 }
 
 

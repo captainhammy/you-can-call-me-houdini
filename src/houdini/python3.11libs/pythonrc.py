@@ -24,14 +24,10 @@ from you_can_call_me_houdini.rop_render import (
 CallbackManager().add_callback(events.HoudiniStartupEvent.NoHip, callbacks.run_123_cmd)
 
 # We need to add ROP render events to any ROP nodes which are created.
-CallbackManager().add_callback(
-    events.HoudiniNodeEvent.OnCreated, attach_rop_render_event
-)
+CallbackManager().add_callback(events.HoudiniNodeEvent.OnCreated, attach_rop_render_event)
 
 # We need to add ROP render events to any ROP nodes when a hip file is loaded.
-CallbackManager().add_callback(
-    events.HoudiniSessionEvent.SceneLoaded, attach_rop_render_to_all_nodes
-)
+CallbackManager().add_callback(events.HoudiniSessionEvent.SceneLoaded, attach_rop_render_to_all_nodes)
 
 if not os.getenv("YOU_CAN_CALL_ME_HOUDINI_DISABLE_ROP_EVENTS"):
     CallbackManager().add_callback(events.RopRenderEvent.PostFrame, print_post_frame)

@@ -16,6 +16,4 @@ def test_OnNameChanged(mocker, execute_houdini_script):
 
     execute_houdini_script("OnNameChanged", {"node": hou.node("/obj")})
 
-    mock_emit.assert_called_with(
-        HoudiniNodeEvent.OnNameChanged, {"node": hou.node("/obj")}
-    )
+    mock_emit.assert_called_with(HoudiniNodeEvent.OnNameChanged, {"node": hou.node("/obj")})

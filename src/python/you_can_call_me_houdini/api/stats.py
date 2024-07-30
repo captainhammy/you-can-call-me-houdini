@@ -6,14 +6,18 @@ from __future__ import annotations
 # Standard Library
 import time
 from dataclasses import dataclass, field
-from types import TracebackType
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from types import TracebackType
+
 
 # Classes
 
 
 @dataclass
 class EventStats:
-    """This class is used to track event stats
+    """This class is used to track event stats.
 
     Args:
         name: The event name to associate the stats with.
@@ -32,7 +36,7 @@ class EventStats:
 
     def __exit__(
         self,
-        exc_type: type[BaseException],
+        exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
         exc_tb: TracebackType | None,
     ) -> None:

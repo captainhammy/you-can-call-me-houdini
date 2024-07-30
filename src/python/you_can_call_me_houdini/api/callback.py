@@ -5,7 +5,7 @@ from __future__ import annotations
 
 # Standard Library
 from dataclasses import dataclass
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 # You Can Call Me Houdini
 from you_can_call_me_houdini.api import constants
@@ -27,12 +27,10 @@ class Callback:
     callback_function: Callable
     enabled: bool = True
 
-    def __call__(self, callback_args: dict) -> Optional[Any]:
+    def __call__(self, callback_args: dict) -> Any | None:  # noqa: D102
         # Only execute the callback function if this callback is enabled.
         if self.enabled:
-            callback_args[constants.CALLBACK_EVENT_TYPE].log_message(
-                self.callback_function, callback_args
-            )
+            callback_args[constants.CALLBACK_EVENT_TYPE].log_message(self.callback_function, callback_args)
 
             return self.callback_function(callback_args)
 

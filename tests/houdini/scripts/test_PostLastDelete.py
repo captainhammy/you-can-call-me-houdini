@@ -16,6 +16,4 @@ def test_PostLastDelete(mocker, execute_houdini_script):
 
     execute_houdini_script("PostLastDelete", {"node": hou.node("/obj")})
 
-    mock_emit.assert_called_with(
-        HoudiniNodeEvent.PostLastDelete, {"node": hou.node("/obj")}
-    )
+    mock_emit.assert_called_with(HoudiniNodeEvent.PostLastDelete, {"node": hou.node("/obj")})

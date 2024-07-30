@@ -24,4 +24,4 @@ def execute_houdini_script():
 
         exec(contents, {"kwargs": kwargs})
 
-    yield _exec
+    return _exec

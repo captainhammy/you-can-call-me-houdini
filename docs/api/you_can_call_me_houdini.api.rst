@@ -41,14 +41,6 @@ you\_can\_call\_me\_houdini.api.manager module
    :undoc-members:
    :show-inheritance:
 
-you\_can\_call\_me\_houdini.api.metaclasses module
---------------------------------------------------
-
-.. automodule:: you_can_call_me_houdini.api.metaclasses
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 you\_can\_call\_me\_houdini.api.stats module
 --------------------------------------------
 

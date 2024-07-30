@@ -41,7 +41,7 @@ def mock_nodegraphutils(monkeypatch, mocker):
 
     monkeypatch.setitem(sys.modules, "nodegraphutils", mocked_nodegraphutils)
 
-    yield mocked_nodegraphutils
+    return mocked_nodegraphutils
 
 
 @pytest.fixture
@@ -51,22 +51,18 @@ def mock_nodegraphdisplay(monkeypatch, mocker):
 
     monkeypatch.setitem(sys.modules, "nodegraphdisplay", mocked_nodegraphdisplay)
 
-    yield mocked_nodegraphdisplay
+    return mocked_nodegraphdisplay
 
 
 # Tests
 
 
-@pytest.mark.parametrize("callback_handled", (False, True))
-def test__execute_keyboard_callbacks(
-    mocker, mock_nodegraphutils, mock_nodegraphdisplay, callback_handled
-):
+@pytest.mark.parametrize("callback_handled", [False, True])
+def test__execute_keyboard_callbacks(mocker, mock_nodegraphutils, mock_nodegraphdisplay, callback_handled):
     """Test nodegraphhooks._execute_keyboard_callbacks()."""
     import nodegraphhooks
 
-    importlib.reload(
-        nodegraphhooks
-    )  # Reload to module mocking works across parametrization
+    importlib.reload(nodegraphhooks)  # Reload to module mocking works across parametrization
 
     mock_event = mocker.MagicMock(spec=nodegraphhooks.KeyboardEvent)
     mock_pending = mocker.MagicMock(spec=list)
@@ -80,9 +76,7 @@ def test__execute_keyboard_callbacks(
         test_callback,
     ]
 
-    mocker.patch.object(
-        manager.CallbackManager, "get_callbacks_for_event", return_value=callbacks
-    )
+    mocker.patch.object(manager.CallbackManager, "get_callbacks_for_event", return_value=callbacks)
 
     result = nodegraphhooks._execute_keyboard_callbacks(mock_event, mock_pending)
 
@@ -90,16 +84,14 @@ def test__execute_keyboard_callbacks(
 
 
 @pytest.mark.parametrize(
-    "event_type, mousepos",
-    (
+    ("event_type", "mousepos"),
+    [
         ("menukeyhit", hou.Vector2(1, 2)),
         ("keyhit", hou.Vector2(3, 4)),
         ("parentkeyhit", None),
-    ),
+    ],
 )
-def test__handle_paste_event(
-    mocker, mock_nodegraphutils, mock_nodegraphdisplay, event_type, mousepos
-):
+def test__handle_paste_event(mocker, mock_nodegraphutils, mock_nodegraphdisplay, event_type, mousepos):
     """Test nodegraphhooks._handle_paste_event()."""
     mock_emit = mocker.patch.object(manager.CallbackManager, "emit")
 
@@ -107,9 +99,7 @@ def test__handle_paste_event(
 
     import nodegraphhooks
 
-    importlib.reload(
-        nodegraphhooks
-    )  # Reload to module mocking works across parametrization
+    importlib.reload(nodegraphhooks)  # Reload to module mocking works across parametrization
 
     mock_editor = mocker.MagicMock()
     mock_editor.pwd.return_value.selectedItems.return_value = mock_items
@@ -134,21 +124,15 @@ def test__handle_paste_event(
         constants.PASTED_ITEMS: mock_items,
         "uievent": mock_event,
     }
-    mock_emit.assert_called_with(
-        events.HoudiniNodeGraphEvent.PostPasteEvent, expected_args
-    )
+    mock_emit.assert_called_with(events.HoudiniNodeGraphEvent.PostPasteEvent, expected_args)
 
 
-@pytest.mark.parametrize("houdini_version", ((20, 0, 123), (19, 5, 456)))
-def test__is_paste_event(
-    mocker, mock_nodegraphutils, mock_nodegraphdisplay, houdini_version
-):
+@pytest.mark.parametrize("houdini_version", [(20, 0, 123), (19, 5, 456)])
+def test__is_paste_event(mocker, mock_nodegraphutils, mock_nodegraphdisplay, houdini_version):
     """Test nodegraphhooks._is_paste_event()."""
     import nodegraphhooks
 
-    importlib.reload(
-        nodegraphhooks
-    )  # Reload to module mocking works across parametrization
+    importlib.reload(nodegraphhooks)  # Reload to module mocking works across parametrization
 
     mocker.patch("hou.applicationVersion", return_value=houdini_version)
 
@@ -159,13 +143,13 @@ def test__is_paste_event(
 
 
 @pytest.mark.parametrize(
-    "is_keyboard_event, is_known_type, is_paste_event, expected",
-    (
+    ("is_keyboard_event", "is_known_type", "is_paste_event", "expected"),
+    [
         (False, False, False, False),
         (True, False, False, False),
         (True, True, False, True),
         (True, True, True, True),
-    ),
+    ],
 )
 def test_createEventHandler(
     mocker,
@@ -179,22 +163,14 @@ def test_createEventHandler(
     """Test nodegraphhooks.createEventHandler()."""
     import nodegraphhooks
 
-    importlib.reload(
-        nodegraphhooks
-    )  # Reload to module mocking works across parametrization
+    importlib.reload(nodegraphhooks)  # Reload to module mocking works across parametrization
 
     mocker.patch("nodegraphhooks._is_paste_event", return_value=is_paste_event)
     mock_handle_paste = mocker.patch("nodegraphhooks._handle_paste_event")
 
-    mock_execute = mocker.patch(
-        "nodegraphhooks._execute_keyboard_callbacks", return_value=(None, True)
-    )
+    mock_execute = mocker.patch("nodegraphhooks._execute_keyboard_callbacks", return_value=(None, True))
 
-    if is_keyboard_event:
-        event = mocker.MagicMock(spec=nodegraphhooks.KeyboardEvent)
-
-    else:
-        event = mocker.MagicMock()
+    event = mocker.MagicMock(spec=nodegraphhooks.KeyboardEvent) if is_keyboard_event else mocker.MagicMock()
 
     event.eventtype = "menukeyhit" if is_known_type else "other"
 

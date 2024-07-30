@@ -7,7 +7,7 @@ from you_can_call_me_houdini.api import logger
 
 
 def test_init_config(mocker):
-    """Test you_can_call_me_houdini.api.logger.init_config()"""
+    """Test you_can_call_me_houdini.api.logger.init_config()."""
     mock_dict_config = mocker.patch("logging.config.dictConfig")
 
     logger.init_config()

@@ -13,9 +13,7 @@ from you_can_call_me_houdini.events import HoudiniSessionEvent
 @pytest.fixture
 def dummy_callback(mocker):
     """Fixture to return a mocked test function."""
-    mock_func = mocker.MagicMock(spec=callable)
-
-    yield mock_func
+    return mocker.MagicMock(spec=callable)
 
 
 @pytest.fixture
@@ -43,7 +41,7 @@ class TestCallback:
         assert result.enabled
         assert result.name == "test_init"
 
-    @pytest.mark.parametrize("enabled", (True, False))
+    @pytest.mark.parametrize("enabled", [True, False])
     def test___call__(self, mocker, dummy_callback, enabled):
         """Test Callback.__call__()."""
         expected_calls = []
