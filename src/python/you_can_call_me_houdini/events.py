@@ -1,5 +1,4 @@
 """This module contains custom event definitions."""
-# pylint: disable=C0103
 
 # You Can Call Me Houdini
 from you_can_call_me_houdini.api.event import (
@@ -17,26 +16,18 @@ class HoudiniNodeEvent(HoudiniNodeEventEnum):
 
     OnCreated = Event("onnodecreate", description="Event when a node is created")
     OnDeleted = Event("ondeleted", description="Event when a node is deleted")
-    OnInputChanged = Event(
-        "onloaded", description="Event when a node's input is changed"
-    )
-    OnInstall = Event(
-        "oninstall", description="Event when a node type is installed into the session"
-    )
+    OnInputChanged = Event("onloaded", description="Event when a node's input is changed")
+    OnInstall = Event("oninstall", description="Event when a node type is installed into the session")
     OnLoaded = Event(
         "onloaded",
         description="Event after a node is created while loading a hip file (or pasted)",
     )
-    OnNameChanged = Event(
-        "onnamechanged", description="Event when a node's name is changed"
-    )
+    OnNameChanged = Event("onnamechanged", description="Event when a node's name is changed")
     OnUninstall = Event(
         "onuninstall",
         description="Event when a node type is uninstalled from the session",
     )
-    OnUpdated = Event(
-        "onupdated", description="Event when an asset definition is updated"
-    )
+    OnUpdated = Event("onupdated", description="Event when an asset definition is updated")
     PreFirstCreate = Event(
         "prefirstcreate",
         description="Event after the last instance of a node type is deleted",
@@ -85,9 +76,7 @@ class HoudiniStartupEvent(HoudiniEventEnum):
     NoHipFX = Event("nohipfx")  # 123.py, before NoHip
     NoHip = Event("nohip")  # 123.py / houdinicore.py
     Any = Event("anyhip")  # Any time 456 is run.
-    HoudiniStarted = RunOnceEvent(
-        "houdinistarted"
-    )  # Runs only the first time 456.py is executed.
+    HoudiniStarted = RunOnceEvent("houdinistarted")  # Runs only the first time 456.py is executed.
     Ready = Event("ready")
 
 

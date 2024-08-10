@@ -16,6 +16,4 @@ def test_OnInputChanged(mocker, execute_houdini_script):
 
     execute_houdini_script("OnInputChanged", {"node": hou.node("/obj")})
 
-    mock_emit.assert_called_with(
-        HoudiniNodeEvent.OnInputChanged, {"node": hou.node("/obj")}
-    )
+    mock_emit.assert_called_with(HoudiniNodeEvent.OnInputChanged, {"node": hou.node("/obj")})

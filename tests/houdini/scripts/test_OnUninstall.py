@@ -16,6 +16,4 @@ def test_OnUninstall(mocker, execute_houdini_script):
 
     execute_houdini_script("OnUninstall", {"node": hou.node("/obj")})
 
-    mock_emit.assert_called_with(
-        HoudiniNodeEvent.OnUninstall, {"node": hou.node("/obj")}
-    )
+    mock_emit.assert_called_with(HoudiniNodeEvent.OnUninstall, {"node": hou.node("/obj")})

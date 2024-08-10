@@ -8,14 +8,14 @@ import pathlib
 import re
 import time
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import ClassVar
 
 # Third Party
 import humanfriendly
+from singleton import Singleton
 
 # You Can Call Me Houdini
 from you_can_call_me_houdini.api.manager import CallbackManager
-from you_can_call_me_houdini.api.metaclasses import Singleton
 from you_can_call_me_houdini.events import RopRenderEvent
 
 # Houdini
@@ -101,9 +101,7 @@ class RopRenderProcess:
         }
 
         if self.output_parameter is not None:
-            args["output_path"] = self.output_parameter.evalAtTime(
-                event_args["scene_time"]
-            )
+            args["output_path"] = self.output_parameter.evalAtTime(event_args["scene_time"])
 
         CallbackManager().emit(RopRenderEvent.PreFrame, args)
 
@@ -129,9 +127,7 @@ class RopRenderProcess:
         }
 
         if self.output_parameter is not None:
-            args["output_path"] = self.output_parameter.evalAtTime(
-                event_args["scene_time"]
-            )
+            args["output_path"] = self.output_parameter.evalAtTime(event_args["scene_time"])
 
         CallbackManager().emit(RopRenderEvent.PostFrame, args)
 
@@ -169,9 +165,7 @@ class RopRenderProcess:
         }
 
         if self.output_parameter is not None:
-            args["output_path"] = self.output_parameter.evalAtTime(
-                event_args["scene_time"]
-            )
+            args["output_path"] = self.output_parameter.evalAtTime(event_args["scene_time"])
 
         CallbackManager().emit(RopRenderEvent.PostWrite, args)
 
@@ -179,7 +173,7 @@ class RopRenderProcess:
 class RopRenderFactory(metaclass=Singleton):
     """Singleton class to manage mappings between rendering ROP nodes and their process data."""
 
-    _node_processes: Dict[hou.OpNode, RopRenderProcess] = {}
+    _node_processes: ClassVar[dict[hou.OpNode, RopRenderProcess]] = {}
 
     def get_process_for_node(self, node: hou.RopNode) -> RopRenderProcess:
         """Find or create a `RopRenderProcess` for a ROP node.
@@ -202,7 +196,7 @@ class RopRenderFactory(metaclass=Singleton):
 # Non-Public Functions
 
 
-def _find_all_rop_instances() -> List[hou.RopNode]:
+def _find_all_rop_instances() -> list[hou.RopNode]:
     """Find a list of all Houdini nodes in the scene which are ROP nodes.
 
     Returns:
@@ -224,18 +218,14 @@ def _find_all_rop_instances() -> List[hou.RopNode]:
     return rop_instances
 
 
-def _find_all_rop_types() -> List[hou.OpNodeType]:
+def _find_all_rop_types() -> list[hou.OpNodeType]:
     """Find a list of all Houdini node types which are ROPs.
 
     Returns:
         A list of all the found ROP node types.
     """
     # Start with all the node types under the standard Driver/ROP context, removing the manager ones.
-    rop_types = [
-        node_type
-        for node_type in hou.ropNodeTypeCategory().nodeTypes().values()
-        if not node_type.isManager()
-    ]
+    rop_types = [node_type for node_type in hou.ropNodeTypeCategory().nodeTypes().values() if not node_type.isManager()]
 
     # Finding ROP node types that exist in other contexts is more tricky. The best way to do this seems
     # to be to look for node types which ARE managers but do NOT allow for any children. SideFX has confirmed
@@ -247,13 +237,11 @@ def _find_all_rop_types() -> List[hou.OpNodeType]:
         if category == hou.ropNodeTypeCategory():
             continue
 
-        rop_types.extend(
-            [
-                node_type
-                for node_type in category.nodeTypes().values()
-                if node_type.isManager() and node_type.childTypeCategory() is None
-            ]
-        )
+        rop_types.extend([
+            node_type
+            for node_type in category.nodeTypes().values()
+            if node_type.isManager() and node_type.childTypeCategory() is None
+        ])
 
     return rop_types
 
@@ -303,7 +291,7 @@ def attach_rop_render_event(scriptargs: dict) -> None:
         node.addRenderEventCallback(handle_rop_render_event)
 
 
-def attach_rop_render_to_all_nodes(scriptargs: dict) -> None:  # pylint: disable=W0613
+def attach_rop_render_to_all_nodes(scriptargs: dict) -> None:
     """Attach our generic render event callback handler to any ROP nodes in the scene.
 
     Args:
@@ -316,9 +304,7 @@ def attach_rop_render_to_all_nodes(scriptargs: dict) -> None:  # pylint: disable
         instance.addRenderEventCallback(handle_rop_render_event)
 
 
-def handle_rop_render_event(
-    node: hou.RopNode, render_event: hou.ropRenderEventType, scene_time: float
-) -> None:
+def handle_rop_render_event(node: hou.RopNode, render_event: hou.ropRenderEventType, scene_time: float) -> None:
     """The ROP render event handler.
 
     Args:

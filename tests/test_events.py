@@ -13,7 +13,7 @@ class TestHoudiniNodeEvent:
     """Test the you_can_call_me_houdini.events.HoudiniNodeEvent object."""
 
     def test_log_message(self, mocker):
-        """Test HoudiniNodeEvent.log_message()"""
+        """Test HoudiniNodeEvent.log_message()."""
         mock_logger = mocker.patch("you_can_call_me_houdini.api.event.event_logger")
 
         def test_func(scriptargs):
@@ -24,9 +24,7 @@ class TestHoudiniNodeEvent:
             "node": mock_node,
         }
 
-        you_can_call_me_houdini.events.HoudiniNodeEvent.OnCreated.log_message(
-            test_func, test_args
-        )
+        you_can_call_me_houdini.events.HoudiniNodeEvent.OnCreated.log_message(test_func, test_args)
 
         mock_logger.debug.assert_called_with(
             "%s: %s '%s'",
@@ -40,7 +38,7 @@ class TestRopRenderEvent:
     """Test the you_can_call_me_houdini.events.RopRenderEvent object."""
 
     def test_log_message(self, mocker):
-        """Test RopRenderEvent.log_message()"""
+        """Test RopRenderEvent.log_message()."""
         mock_logger = mocker.patch("you_can_call_me_houdini.api.event.event_logger")
 
         def test_func(scriptargs):
@@ -51,9 +49,7 @@ class TestRopRenderEvent:
             "node": mock_node,
         }
 
-        you_can_call_me_houdini.events.RopRenderEvent.PreRender.log_message(
-            test_func, test_args
-        )
+        you_can_call_me_houdini.events.RopRenderEvent.PreRender.log_message(test_func, test_args)
 
         mock_logger.debug.assert_called_with(
             "%s: %s '%s'",

@@ -1,3 +1,5 @@
+"""Setup tests for you_can_call_me_houdini."""
+
 # Houdini
 import hou
 

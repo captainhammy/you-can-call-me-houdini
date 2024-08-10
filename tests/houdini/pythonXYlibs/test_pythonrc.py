@@ -16,7 +16,7 @@ pytestmark = pytest.mark.usefixtures("add_pythonxylibs")
 # Tests
 
 
-@pytest.mark.parametrize("disable_rop_progress", (False, True))
+@pytest.mark.parametrize("disable_rop_progress", [False, True])
 def test_pythonrc(monkeypatch, mocker, disable_rop_progress):
     """Test the pythonrc.py module."""
     mock_manager = mocker.patch("you_can_call_me_houdini.api.manager.CallbackManager")
@@ -33,6 +33,4 @@ def test_pythonrc(monkeypatch, mocker, disable_rop_progress):
     mock_init_logging.assert_called()
 
     if not disable_rop_progress:
-        mock_manager.return_value.add_callback.assert_any_call(
-            events.RopRenderEvent.PostFrame, print_post_frame
-        )
+        mock_manager.return_value.add_callback.assert_any_call(events.RopRenderEvent.PostFrame, print_post_frame)

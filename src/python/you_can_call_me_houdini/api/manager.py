@@ -7,13 +7,15 @@ from __future__ import annotations
 import logging
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import Callable, Dict, Generator, List, Optional
+from typing import Callable, Generator
+
+# Third Party
+from singleton import Singleton
 
 # You Can Call Me Houdini
-from you_can_call_me_houdini.api import constants
+from you_can_call_me_houdini.api import constants, exceptions
 from you_can_call_me_houdini.api.callback import Callback
 from you_can_call_me_houdini.api.event import HoudiniEventEnum
-from you_can_call_me_houdini.api.metaclasses import Singleton
 
 # Houdini
 import hou
@@ -30,16 +32,17 @@ class CallbackManager(metaclass=Singleton):
     This class is a singleton.
     """
 
-    callbacks: Dict[HoudiniEventEnum, List[Callback]] = field(default_factory=dict)
+    callbacks: dict[HoudiniEventEnum, list[Callback]] = field(default_factory=dict)
 
     def add_callback(
         self,
         event: HoudiniEventEnum,
         callback_function: Callable,
-        name: Optional[str] = None,
+        *,
+        name: str | None = None,
         enabled: bool = True,
         skip_no_ui: bool = False,
-    ) -> Optional[Callback]:
+    ) -> Callback | None:
         """Add a callback against an event.
 
         If skipping in the event of the UI being unavailable and the UI is actually unavailable then
@@ -68,17 +71,18 @@ class CallbackManager(metaclass=Singleton):
 
         return callback
 
-    def emit(
-        self, event_type: HoudiniEventEnum, callback_args: Optional[dict] = None
-    ) -> None:
+    def emit(self, event_type: HoudiniEventEnum, callback_args: dict | None = None) -> None:
         """Emit an event and execute any assigned callbacks.
 
         Args:
             event_type: The event type being emitted.
             callback_args: Optional argument dictionary to pass to any callbacks.
+
+        Raises:
+            InvalidEventTypeError: Raised if `event_type` is not a `HoudiniEventEnum` instance.
         """
         if not isinstance(event_type, HoudiniEventEnum):
-            raise TypeError(f"{event_type} is not an instance of {HoudiniEventEnum}")
+            raise exceptions.InvalidEventTypeError(event_type)
 
         event = event_type.value
 
@@ -101,7 +105,7 @@ class CallbackManager(metaclass=Singleton):
 
         event.post_run_callback()
 
-    def get_callbacks_for_event(self, event_type: HoudiniEventEnum) -> List[Callback]:
+    def get_callbacks_for_event(self, event_type: HoudiniEventEnum) -> list[Callback]:
         """Get a list of callbacks for an event.
 
         If the event is disabled then an empty list will be returned.
@@ -119,7 +123,7 @@ class CallbackManager(metaclass=Singleton):
 
     @contextmanager
     def ignore_event_callbacks(
-        self, events: Optional[HoudiniEventEnum | List[HoudiniEventEnum]] = None
+        self, events: HoudiniEventEnum | list[HoudiniEventEnum] | None = None
     ) -> Generator[None, None, None]:
         """Disable events during the scope.
 

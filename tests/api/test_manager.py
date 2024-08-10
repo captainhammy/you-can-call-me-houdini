@@ -1,11 +1,13 @@
 """Tests for the you_can_call_me_houdini.api.manager module."""
 
+# Standard Library
+from contextlib import nullcontext
+
 # Third Party
 import pytest
-import pytest_houdini.tools
 
 # You Can Call Me Houdini
-from you_can_call_me_houdini.api import event, manager
+from you_can_call_me_houdini.api import event, exceptions, manager
 from you_can_call_me_houdini.events import HoudiniSessionEvent
 
 
@@ -15,7 +17,6 @@ def test_manager():
 
     The `callbacks` dict is cleared after each test.
     """
-
     inst = manager.CallbackManager()
 
     yield inst
@@ -25,12 +26,14 @@ def test_manager():
 
 @pytest.fixture
 def test_enum():
+    """Fixture to provide test event enum class."""
+
     class TestEnum(event.HoudiniEventEnum):
         FOO = event.Event("foo")
         BAR = event.Event("bar", enabled=False)
         BAZ = event.Event("baz")
 
-    yield TestEnum
+    return TestEnum
 
 
 class TestCallbackManager:
@@ -42,13 +45,13 @@ class TestCallbackManager:
         assert inst.callbacks == {}
 
     @pytest.mark.parametrize(
-        "ui_available,skip_no_ui,expect_result,test_name",
-        (
+        ("ui_available", "skip_no_ui", "expect_result", "test_name"),
+        [
             (False, True, False, None),
             (False, False, True, None),
             (True, False, True, None),
             (True, False, True, "test_name"),
-        ),
+        ],
     )
     def test_add_callback(
         self,
@@ -80,32 +83,30 @@ class TestCallbackManager:
             assert result is None
 
     @pytest.mark.parametrize(
-        "tester,event_enum,enabled,pass_args",
-        (
-            (pytest.raises(TypeError), None, True, False),
+        ("tester", "event_enum", "enabled", "pass_args"),
+        [
+            (pytest.raises(exceptions.InvalidEventTypeError), None, True, False),
             (
-                pytest_houdini.tools.does_not_raise(),
+                None,
                 HoudiniSessionEvent.NewScene,
                 False,
                 False,
             ),
             (
-                pytest_houdini.tools.does_not_raise(),
+                None,
                 HoudiniSessionEvent.NewScene,
                 True,
                 False,
             ),
             (
-                pytest_houdini.tools.does_not_raise(),
+                None,
                 HoudiniSessionEvent.NewScene,
                 True,
                 True,
             ),
-        ),
+        ],
     )
-    def test_emit(
-        self, mocker, test_manager, test_enum, tester, event_enum, enabled, pass_args
-    ):
+    def test_emit(self, mocker, test_manager, test_enum, tester, event_enum, enabled, pass_args):
         """Test CallbackManager.emit()."""
         mock_func = mocker.MagicMock()
         mock_func.__name__ = "name"
@@ -121,6 +122,9 @@ class TestCallbackManager:
         if pass_args:
             test_args = {"dummy_arg": 123}
 
+        if tester is None:
+            tester = nullcontext()
+
         with tester:
             test_manager.emit(event_enum, test_args)
 
@@ -131,16 +135,14 @@ class TestCallbackManager:
             mock_post.assert_called()
 
     @pytest.mark.parametrize(
-        "enabled,has_callbacks",
-        (
+        ("enabled", "has_callbacks"),
+        [
             (False, True),
             (True, False),
             (True, True),
-        ),
+        ],
     )
-    def test_get_callbacks_for_event(
-        self, mocker, test_manager, test_enum, enabled, has_callbacks
-    ):
+    def test_get_callbacks_for_event(self, mocker, test_manager, test_enum, enabled, has_callbacks):
         """Test CallbackManager.get_callbacks_for_event()."""
         test_enum.FOO.value.enabled = enabled
 

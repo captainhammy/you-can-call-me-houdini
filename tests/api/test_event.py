@@ -30,12 +30,10 @@ class TestHoudiniEventEnum:
 class TestEvent:
     """Test the you_can_call_me_houdini.api.event.Event object."""
 
-    @pytest.mark.parametrize("post_report", (False, True))
+    @pytest.mark.parametrize("post_report", [False, True])
     def test___pos_init__(self, post_report):
         """Test Event.__post_init__()."""
-        inst = you_can_call_me_houdini.api.event.Event(
-            "test", stats_post_report=post_report
-        )
+        inst = you_can_call_me_houdini.api.event.Event("test", stats_post_report=post_report)
         assert inst.stats.post_report == post_report
 
 
@@ -43,6 +41,7 @@ class TestRunOnceEvent:
     """Test the you_can_call_me_houdini.api.event.RunOnceEvent object."""
 
     def test_post_run_callback(self):
+        """Test RunOnceEvent.post_run_callback()."""
         inst = you_can_call_me_houdini.api.event.RunOnceEvent("test")
 
         assert inst.enabled

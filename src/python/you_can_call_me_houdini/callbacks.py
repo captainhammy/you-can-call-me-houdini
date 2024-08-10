@@ -17,7 +17,7 @@ def emit_houdini_close() -> None:
     manager.emit(HoudiniSessionEvent.HoudiniClose)
 
 
-def run_123_cmd(event_args: dict) -> None:  # pylint: disable=W0613
+def run_123_cmd(event_args: dict) -> None:
     """Source and execute 123.cmd.
 
     Args:

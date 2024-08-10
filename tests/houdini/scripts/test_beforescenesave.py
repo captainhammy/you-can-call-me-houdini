@@ -16,6 +16,4 @@ def test_beforescenesave(mocker, execute_houdini_script):
 
     execute_houdini_script("beforescenesave", {"node": hou.node("/obj")})
 
-    mock_emit.assert_called_with(
-        HoudiniSessionEvent.BeforeSceneSave, {"node": hou.node("/obj")}
-    )
+    mock_emit.assert_called_with(HoudiniSessionEvent.BeforeSceneSave, {"node": hou.node("/obj")})

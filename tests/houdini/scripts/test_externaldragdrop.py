@@ -26,21 +26,21 @@ def clean_manager(monkeypatch):
 
     monkeypatch.setattr(mgr, "callbacks", {})
 
-    yield mgr
+    return mgr
 
 
 # Tests
 
 
 @pytest.mark.parametrize(
-    "test_paths, expected",
-    (
+    ("test_paths", "expected"),
+    [
         (["/path/to/file.hip"], True),
         (["/path/to/file.hiplc"], True),
         (["/path/to/file.hipnc"], True),
         (["/path/to/file.hiprc"], False),
         (["/path/to/thing.txt", "/path/to/file.hip"], True),
-    ),
+    ],
 )
 def test__contains_any_hip_files(test_paths, expected):
     """Test externaldragdrop._contains_any_hip_files()."""
@@ -50,12 +50,12 @@ def test__contains_any_hip_files(test_paths, expected):
 
 
 @pytest.mark.parametrize(
-    "has_hips, accepted, expected",
-    (
+    ("has_hips", "accepted", "expected"),
+    [
         (True, True, False),
         (False, False, False),
         (False, True, True),
-    ),
+    ],
 )
 def test_dropAccept(mocker, clean_manager, has_hips, accepted, expected):
     """Test externaldragdrop.dropAccept()."""

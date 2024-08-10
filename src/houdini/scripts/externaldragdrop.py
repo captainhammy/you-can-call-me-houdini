@@ -30,17 +30,13 @@ def _contains_any_hip_files(file_paths: List[str]) -> bool:
     """
     hip_extensions = (".hip", ".hiplc", ".hipnc")
 
-    return any(
-        file_path
-        for file_path in file_paths
-        if Path(file_path).suffix in hip_extensions
-    )
+    return any(file_path for file_path in file_paths if Path(file_path).suffix in hip_extensions)
 
 
 # Functions
 
 
-def dropAccept(file_paths: List[str]) -> bool:  # pylint: disable=invalid-name
+def dropAccept(file_paths: List[str]) -> bool:
     """Accept a list of files.
 
     This function is called by Houdini when files are dropped onto the UI.
@@ -57,9 +53,7 @@ def dropAccept(file_paths: List[str]) -> bool:  # pylint: disable=invalid-name
 
     scriptargs = {"file_paths": file_paths}
 
-    CallbackManager().emit(
-        you_can_call_me_houdini.events.HoudiniSessionEvent.ExternalDragDrop, scriptargs
-    )
+    CallbackManager().emit(you_can_call_me_houdini.events.HoudiniSessionEvent.ExternalDragDrop, scriptargs)
 
     # Return whether the drop was accepted by the handler.
     return bool(scriptargs.get(constants.DRAG_DROP_ACCEPTED, False))

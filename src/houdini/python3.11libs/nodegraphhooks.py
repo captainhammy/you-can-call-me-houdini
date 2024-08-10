@@ -89,7 +89,9 @@ def _is_paste_event(uievent: KeyboardEvent) -> bool:
 # Functions
 
 
-def createEventHandler(uievent: KeyboardEvent, pending_actions: list) -> tuple[None, bool]:
+def createEventHandler(  # pylint: disable=invalid-name
+    uievent: KeyboardEvent, pending_actions: list
+) -> tuple[None, bool]:
     """Create an event handler for Houdini's network editor.
 
     Args:

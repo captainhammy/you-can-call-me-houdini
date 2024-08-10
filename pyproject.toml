@@ -1,3 +1,7 @@
+[tool.pytest.ini_options]
+    pythonpath = "src"
+    addopts = "--cov --cov-report=html --cov-report=xml --cov-fail-under=100  --color=yes"
+
 [tool.isort]
     profile = "black"
     src_paths = ["src/python", "src/houdini/scripts", "src/houdini/python*libs"]
@@ -18,12 +22,16 @@
     files = "src"
     mypy_path = "src"
     ignore_missing_imports = true
-    exclude = "src/houdini/python3.9libs"
+    # Ignore these paths and let testing run again python3.11libs,
+    # otherwise they'll all get flagged as duplicates.
+    exclude = [
+        "src/houdini/python3.9libs",
+        "src/houdini/python3.10libs"
+    ]
 
     [[tool.mypy.overrides]]
         module = "hou.*"
         ignore_missing_imports = true
-
 
 [tool.coverage]
 
@@ -62,91 +70,67 @@
     [tool.coverage.html]
         directory = "coverage_html_report"
 
-[tool.pylint]
+[tool.pydocstringformatter]
+    max-summary-lines = 2
+    max-line-length = 120
 
-    [tool.pylint.master]
-        extension-pkg-whitelist = ['PySide2']
-        ignore=['CVS']
-        persistent = ['no']
-        suggestion-mode = ['yes']
-        unsafe-load-any-extension = ['no']
+[tool.ruff]
+    line-length = 120
 
-    [tool.pylint.'MESSAGES CONTROL']
-        disable = [
-            'import-error,c-extension-no-member,line-too-long,duplicate-code,fixme,too-many-lines,import-outside-toplevel,wrong-import-order'
-            ]
-        enable = ['no-else-return']
+    [tool.ruff.lint]
+        extend-select = [
+            "E",  # pycodestyle
+            "W",  # pycodestyle
+            "UP", # pyupgrade
+            "D",  # pydocstyle
+            "F",  # Pyflakes
+            "PL",  # Pylint
+            "RSE",  # flake8-raise
+            "B",  # flake8-bugbear
+            "PT",  #  flake8-pytest-style
+            "C90",  #  mccabe
+            "TRY",  #  tryceratops
+            "FLY",  #  flynt
+            "PERF",  #  Perflint
+            "LOG",  #  flake8-logging
+            "BLE",  # flake8-blind-except
+            "A",  # flake8-builtins
+            "C4",  # flake8-comprehensions
+            "RET",  # flake8-return
+            "SIM",  # flake8-simplify
+            "TCH",  # flake8-type-checking
+            "PTH",  # flake8-use-pathlib
+            "RUF",  # Ruff specific
+            "FBT",  # flake8-boolean-trap
+            "FURB",  # refurb
+            "PYI",  # flake8-pyi
+        ]
+        ignore = [
+            "D104",  # Missing docstring in public module
+            "D105",  # Missing docstring in magic method
+            "D107",  # Missing docstring in __init__
+        ]
 
-    [tool.pylint.'REPORTS']
-        reports = ['no']
-        score = ['no']
+    [tool.ruff.lint.per-file-ignores]
+        "pythonrc.py" = [
+            "E402",  # Module level import not at top of file
+        ]
+        "tests/*.py" = [
+            "PLC0415",  # Import not at top level
+            "PLC2801",  # Unnecessary dunder call
+            "PLR0913",  # Too many args for function
+            "PLR0917",  # Too many positional args
+            "PLR2004",  # Magic value in comparison
+            "PLR6301",  # 'no-self-use' for tests
+            "PT004",  # Fixtures not returning anything not starting with _
+            "PT008",  # Use return_value instead of lambda
+        ]
 
-    [tool.pylint.'LOGGING']
-      logging-modules = ['logging']
+    [tool.ruff.lint.flake8-pytest-style]
+        fixture-parentheses = false  # Match actual pytest recommendation with no parentheses
 
-    [tool.pylint.'VARIABLES']
-        allow-global-unused-variables = ['yes']
-        dummy-variables-rgx = ['_+$|(_[a-zA-Z0-9_]*[a-zA-Z0-9]+?$)|dummy|^ignored_|^unused_']
-        ignored-argument-names = ['_.*|^ignored_|^unused_']
-        init-import = ['no']
-        redefining-builtins-modules = ['six.moves,future.builtins,io']
+    [tool.ruff.lint.pydocstyle]
+        convention = "google"
 
-    [tool.pylint.'FORMAT']
-        ignore-long-lines = ['^\s*(# )?<?https?://\S+>?$']
-        indent-after-paren = 4
-        indent-string = '    '
-        max-line-length = 100
-        max-module-lines = 1000
-        single-line-class-stmt = ['no']
-        single-line-if-stmt = ['no']
-
-    [tool.pylint.'TYPECHECK']
-        ignore-mixin-members = ['yes']
-        ignore-on-opaque-inference = ['yes']
-        missing-member-hint = ['yes']
-        missing-member-hint-distance = 1
-        missing-member-max-choices = 1
-
-    [tool.pylint.'MISCELLANEOUS']
-        notes = ['FIXME,XXX,TODO,BUG']
-
-    [tool.pylint.'BASIC']
-        argument-naming-style=['snake_case']
-        attr-naming-style=['snake_case']
-        bad-names=['foo,bar,foobar,baz']
-        class-attribute-naming-style='any'
-        class-naming-style='PascalCase'
-        const-rgx=['(([a-zA-Z_][a-zA-Z0-9_]*)|(__.*__))$']
-        docstring-min-length = -1
-        function-naming-style='snake_case'
-        good-names=['i,j,k,t,ex,fp,Run,_']  # fp for pytest_subprocess
-        inlinevar-naming-style='any'
-        method-naming-style='snake_case'
-        module-rgx='(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+)|([0-9]+))$'
-        name-group=''
-        no-docstring-rgx='^_'
-        property-classes='abc.abstractproperty'
-        variable-naming-style='snake_case'
-
-    [tool.pylint.'DESIGN']
-        max-args = 8
-        max-attributes = 30
-        max-bool-expr = 5
-        max-branches = 40
-        max-locals = 15
-        max-parents = 7
-        max-public-methods = 20
-        max-returns = 6
-        max-statements = 100
-        min-public-methods = 0
-
-    [tool.pylint.'CLASSES']
-        defining-attr-methods = ['__init__,__new__,setUp']
-        valid-classmethod-first-arg = ['cls']
-        valid-metaclass-classmethod-first-arg = ['mcs']
-
-    [tool.pylint.'IMPORTS']
-      allow-wildcard-with-all = ['no']
-
-    [tool.pylint.'EXCEPTIONS']
-       overgeneral-exceptions = ['Exception,hou.Error']
+    [tool.ruff.lint.pylint]
+        max-args = 6
