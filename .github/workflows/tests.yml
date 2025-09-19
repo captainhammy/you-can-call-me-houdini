@@ -52,7 +52,10 @@ jobs:
         # the libs will otherwise be installed in the system location where Houdini
         # won't load things from.
         run: |
-          hython -m pip install -r requirements.txt -r test_requirements.txt
+          # We actually don't want the package dir var set when we use hython to install the requirements
+          # as it will just generate a lot of spam about missing requirements due to all the scripts
+          # trying to execute on startup.
+          env --unset=HOUDINI_PACKAGE_DIR hython -m pip install -r requirements.txt -r test_requirements.txt
           cp -r src/houdini/pythonX.Ylibs src/houdini/python${_CONTAINER_PYTHON_VERSION}libs
           # The pytest setting for coverage percentage failure in pyproject.toml don't get along
           # with the fact that using the package .json file has HOUDINI_PATH set. If we create
