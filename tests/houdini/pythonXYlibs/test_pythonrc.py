@@ -10,7 +10,7 @@ import pytest
 from you_can_call_me_houdini import events
 from you_can_call_me_houdini.rop_render import print_post_frame
 
-pytestmark = pytest.mark.usefixtures("add_pythonxylibs")
+pytestmark = pytest.mark.usefixtures("add_scripts_python")
 
 
 # Tests

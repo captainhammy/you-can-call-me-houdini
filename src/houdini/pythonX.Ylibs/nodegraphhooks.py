@@ -32,7 +32,7 @@ def _execute_keyboard_callbacks(uievent: KeyboardEvent, pending_actions: list) -
     for callback in CallbackManager().get_callbacks_for_event(HoudiniNodeGraphEvent.PostKeyboardEvent):
         callback(scriptargs)
 
-        if scriptargs.get(constants.KEYBOARD_EVENT_HANDLED, False):
+        if scriptargs.get(constants.KEYBOARD_EVENT_HANDLED):
             return None, True
 
     return None, False

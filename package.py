@@ -9,8 +9,6 @@ description = "You Can Call Me Houdini"
 def version() -> str:
     """Get the package version.
 
-    Because this project is not versioned we'll just use the short git hash as the version.
-
     Returns:
         The package version.
     """
@@ -20,22 +18,21 @@ def version() -> str:
 authors = ["graham thompson"]
 
 requires = [
+    "houdini-20.5+<21.5",
     "humanfriendly",
     "python_singleton",
 ]
 
 build_system = "cmake"
 
-variants = [
-     ["houdini-19.5"],
-     ["houdini-20.0"],
-     ["houdini-20.5"],
- ]
+build_requires = [
+    "houdini_rez_cmake_tools",
+]
 
 tests = {
     "unit": {
-        "command": "coverage erase && hython -m pytest tests",
-        "requires": ["pytest", "pytest_sugar", "coverage", "pytest_mock", "pytest_houdini"],
+        "command": "hython -m pytest tests",
+        "requires": ["pytest", "pytest_cov", "pytest_houdini", "pytest_mock"],
     }
 }
 

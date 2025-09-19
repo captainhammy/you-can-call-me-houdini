@@ -2,7 +2,6 @@
 
 # Standard Library
 from pathlib import Path
-from typing import List
 
 # You Can Call Me Houdini
 import you_can_call_me_houdini.events
@@ -12,7 +11,7 @@ from you_can_call_me_houdini.api.manager import CallbackManager
 # Non-Public Functions
 
 
-def _contains_any_hip_files(file_paths: List[str]) -> bool:
+def _contains_any_hip_files(file_paths: list[str]) -> bool:
     """Check if any of the dropped files are hip files.
 
     This will only match explicit known hip file types:
@@ -36,7 +35,7 @@ def _contains_any_hip_files(file_paths: List[str]) -> bool:
 # Functions
 
 
-def dropAccept(file_paths: List[str]) -> bool:
+def dropAccept(file_paths: list[str]) -> bool:
     """Accept a list of files.
 
     This function is called by Houdini when files are dropped onto the UI.
@@ -56,4 +55,4 @@ def dropAccept(file_paths: List[str]) -> bool:
     CallbackManager().emit(you_can_call_me_houdini.events.HoudiniSessionEvent.ExternalDragDrop, scriptargs)
 
     # Return whether the drop was accepted by the handler.
-    return bool(scriptargs.get(constants.DRAG_DROP_ACCEPTED, False))
+    return bool(scriptargs.get(constants.DRAG_DROP_ACCEPTED))
