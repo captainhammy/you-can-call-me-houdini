@@ -15,27 +15,36 @@ Adding to Houdini
 
 ``you-can-call-me-houdini`` supports being loaded into Houdini in multiple ways:
 
-    - `Houdini Packages <https://www.sidefx.com/docs/houdini/ref/plugins.html>`_
     - `Rez packages <https://github.com/AcademySoftwareFoundation/rez>`_
+    - `Houdini Packages <https://www.sidefx.com/docs/houdini/ref/plugins.html>`_
     - Standard path based setup
 
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^
+Rez Package
+^^^^^^^^^^^
+
+This preferred installation method of this package is with Rez packaging via a ``package.py`` file in the root directory.
+
+^^^^^^^^^^^^^^^^^^^^^^^
+Non-Rez Package Options
+^^^^^^^^^^^^^^^^^^^^^^^
+
+It is possible to use ``you-can-call-me-houdini`` without rez, however it will currently take some minor work to enable
+all the features: you will need to copy/rename the `src/houdini/pythonX.Ylibs` directory to the Python version you
+wish to have support for (e.g. python3.11libs).
+
+
+***************
 Houdini Package
-^^^^^^^^^^^^^^^
+***************
 
 This tool comes with a ``you_can_call_me_houdini.json`` file which can be used to tell Houdini how to load
 the package. Add the containing directory to ``$HOUDINI_PACKAGE_DIR`` to ensure it is loaded.
 
-^^^^^^^^^^^^
-Rez Package
-^^^^^^^^^^^^
 
-This package supports Rez packaging via a ``package.py`` file in the root directory.  Different versions of
-Houdini are supported via variants.
-
-^^^^^^^^^^^^^^^^
+****************
 Path Based Setup
-^^^^^^^^^^^^^^^^
+****************
 
 In order to manually setup the tooling you'll need to do the following:
 

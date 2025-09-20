@@ -10,11 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        houdini-version: ["20.5", "20.0", "19.5"]
+        houdini-version: ["20.5", "21.0"]
     container:
       image: captainhammy/hython-runner:${{ matrix.houdini-version }}
 
     steps:
+      - name: Mark workspace as safe
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Checkout repo
         uses: actions/checkout@v4
 
@@ -26,14 +29,39 @@ jobs:
           client_secret_key: ${{ secrets.SESI_SECRET_KEY }}
 
       - name: Install dependencies
-        run: python${{ matrix.python-version }} -m pip install tox tox-gh-actions
+        run: python3 -m pip install tox tox-gh-actions
 
+      # Run tox tests (unit tests + static code analysis)
       - name: Test with tox
         run: tox
 
-      - name: Workaround for codecov/feedback#263
+      # Build package for rez testing
+      - name: Build Package
+        uses: captainhammy/build-rez-package-action@v1
+
+      # Test rez package
+      - name: Test Current Rez Package
+        uses: captainhammy/test-rez-package-action@v1
+
+      # Test the package using the Houdini package .json file to ensure it works
+      - name: Test Houdini package json
+        env:
+          # Set the package search path to the workspace so Houdini will pick up the .json
+          HOUDINI_PACKAGE_DIR: ${{ github.workspace }}
+        # Need to use Hython to pip install since commands are run by the root user and
+        # the libs will otherwise be installed in the system location where Houdini
+        # won't load things from.
         run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          # We actually don't want the package dir var set when we use hython to install the requirements
+          # as it will just generate a lot of spam about missing requirements due to all the scripts
+          # trying to execute on startup.
+          env --unset=HOUDINI_PACKAGE_DIR hython -m pip install -r requirements.txt -r test_requirements.txt
+          cp -r src/houdini/pythonX.Ylibs src/houdini/python${_CONTAINER_PYTHON_VERSION}libs
+          # The pytest setting for coverage percentage failure in pyproject.toml don't get along
+          # with the fact that using the package .json file has HOUDINI_PATH set. If we create
+          # an empty pytest.ini file this will preempt the .toml file and just run the tests. 
+          touch pytest.ini
+          hython -m pytest tests/
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4

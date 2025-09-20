@@ -7,17 +7,13 @@ import pytest
 from you_can_call_me_houdini.api.manager import CallbackManager
 from you_can_call_me_houdini.events import HoudiniUIEvent
 
-# Houdini
-import hou
-
-pytestmark = pytest.mark.usefixtures("add_pythonxylibs")
+pytestmark = pytest.mark.usefixtures("add_scripts_python")
 
 
 # Tests
 
 
-@pytest.mark.skipif(hou.applicationVersion() < (20,), reason="File added in Houdini 20.0")
-def test_uiready(mocker):
+def test_uiready(mocker, mock_hdefereval):
     """Test the uiready.py script."""
     mock_emit = mocker.patch.object(CallbackManager, "emit")
 

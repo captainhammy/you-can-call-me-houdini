@@ -1,6 +1,6 @@
 [tool.pytest.ini_options]
     pythonpath = "src"
-    addopts = "--cov --cov-report=html --cov-report=xml --cov-fail-under=100  --color=yes"
+    addopts = "--cov --cov-report=html --cov-report=xml --cov-fail-under=100 --color=yes"
 
 [tool.isort]
     profile = "black"
@@ -22,13 +22,6 @@
     files = "src"
     mypy_path = "src"
     ignore_missing_imports = true
-    # Ignore these paths and let testing run again python3.11libs,
-    # otherwise they'll all get flagged as duplicates.
-    exclude = [
-        "src/houdini/python3.9libs",
-        "src/houdini/python3.10libs"
-    ]
-
     [[tool.mypy.overrides]]
         module = "hou.*"
         ignore_missing_imports = true

@@ -266,7 +266,7 @@ def _get_frame_padding(parameter: hou.Parm) -> int:
         result = None
 
     else:
-        result = re.search("\\.\\$F(\\d+)\\.", path_value)
+        result = re.search(r"\.\$F(\d+)\.", path_value)
 
     frame_padding = 1
 

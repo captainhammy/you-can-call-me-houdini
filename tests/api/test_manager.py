@@ -41,8 +41,14 @@ class TestCallbackManager:
 
     def test___init__(self):
         """Test object initialization."""
+        # Force clear out any singleton instances that may have already been created.
+        manager.CallbackManager._instances.clear()
+
         inst = manager.CallbackManager()
         assert inst.callbacks == {}
+
+        # Check singleton-ness
+        assert inst is manager.CallbackManager()
 
     @pytest.mark.parametrize(
         ("ui_available", "skip_no_ui", "expect_result", "test_name"),
