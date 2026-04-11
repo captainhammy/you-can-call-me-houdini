@@ -5,10 +5,13 @@ from __future__ import annotations
 
 # Standard Library
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any
 
 # You Can Call Me Houdini
 from you_can_call_me_houdini.api import constants
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 @dataclass

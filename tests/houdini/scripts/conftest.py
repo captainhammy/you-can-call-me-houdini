@@ -19,9 +19,8 @@ def execute_houdini_script():
         if not script_path.exists():
             script_path = pathlib.Path(f"src/houdini/scripts/_{script_name}.py")
 
-        with script_path.open() as handle:
-            contents = handle.read()
+        contents = script_path.read_text()
 
-        exec(contents, {"kwargs": kwargs})
+        exec(contents, {"kwargs": kwargs})  # noqa: S102
 
     return _exec

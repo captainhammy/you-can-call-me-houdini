@@ -102,6 +102,7 @@
             "D104",  # Missing docstring in public module
             "D105",  # Missing docstring in magic method
             "D107",  # Missing docstring in __init__
+            "I001",  # Import ordering
         ]
 
     [tool.ruff.lint.per-file-ignores]
@@ -109,6 +110,7 @@
             "E402",  # Module level import not at top of file
         ]
         "tests/*.py" = [
+            "N999",  # Invalid module name
             "PLC0415",  # Import not at top level
             "PLC2801",  # Unnecessary dunder call
             "PLR0913",  # Too many args for function

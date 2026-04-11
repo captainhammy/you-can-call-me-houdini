@@ -1,13 +1,19 @@
 """This module contains the base api implementations for events."""
 
+# Future
+from __future__ import annotations
+
 # Standard Library
 import logging
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
-from typing import Callable, Optional
+from typing import TYPE_CHECKING
 
 # You Can Call Me Houdini
 from you_can_call_me_houdini.api.stats import EventStats
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 # Common logger to use for the enum related logging. This should be better handled
 # via the enum class setup but relies on Python 3.11+'s __init_subclass__ method.
@@ -56,7 +62,7 @@ class Event:
 
     name: str
     enabled: bool = True
-    description: Optional[str] = None
+    description: str | None = None
     stats: EventStats = field(init=False)
     stats_post_report: InitVar[bool] = False
 

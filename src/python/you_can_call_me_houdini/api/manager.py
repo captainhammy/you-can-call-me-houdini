@@ -7,7 +7,7 @@ from __future__ import annotations
 import logging
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 # Third Party
 from singleton import Singleton
@@ -21,7 +21,7 @@ from you_can_call_me_houdini.api.event import HoudiniEventEnum
 import hou
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
+    from collections.abc import Callable, Generator
 
 
 # Classes
