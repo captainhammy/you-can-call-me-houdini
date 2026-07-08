@@ -22,8 +22,11 @@ list(FILTER houdini_files EXCLUDE REGEX ".\.pyc|CMakeLists.txt")
 # Remove any pythonX.Y libs paths as the specific ones will be handled next.
 exclude_all_python_xylibs_dirs( houdini_files )
 
-# Handle the specific pythonX.Ylibs for the target Houdini's Python version.
-install_python_xylibs_dir_for_houdini_version( "src/houdini" )
+# Define the list of Python versions for the versions of Houdini this package supports.
+set( python_versions "3.11" "3.13" )
+
+# Handle the specific pythonX.Ylibs for the python versions.
+install_python_xylibs_dir_for_python_versions( "src/houdini" PYTHON_VERSIONS ${python_versions} )
 
 
 rez_install_files(
@@ -31,5 +34,3 @@ rez_install_files(
     RELATIVE src/houdini
     DESTINATION houdini
 )
-
-add_subdirectory(src/houdini)

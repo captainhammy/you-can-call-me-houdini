@@ -1,7 +1,11 @@
 """Tests for the you_can_call_me_houdini.api.manager module."""
 
+# Future
+from __future__ import annotations
+
 # Standard Library
 from contextlib import nullcontext
+from typing import TYPE_CHECKING, Any
 
 # Third Party
 import pytest
@@ -10,9 +14,20 @@ import pytest
 from you_can_call_me_houdini.api import event, exceptions, manager
 from you_can_call_me_houdini.events import HoudiniSessionEvent
 
+if TYPE_CHECKING:
+    from collections.abc import Generator
+
+    from pytest_mock import MockerFixture
+
+
+class EnumTester(event.HoudiniEventEnum):  # noqa: D101
+    FOO = event.Event("foo")
+    BAR = event.Event("bar", enabled=False)
+    BAZ = event.Event("baz")
+
 
 @pytest.fixture
-def test_manager():
+def test_manager() -> Generator[manager.CallbackManager, Any, None]:
     """A CallbackManager for testing.
 
     The `callbacks` dict is cleared after each test.
@@ -25,21 +40,15 @@ def test_manager():
 
 
 @pytest.fixture
-def test_enum():
+def test_enum() -> type[EnumTester]:
     """Fixture to provide test event enum class."""
-
-    class TestEnum(event.HoudiniEventEnum):
-        FOO = event.Event("foo")
-        BAR = event.Event("bar", enabled=False)
-        BAZ = event.Event("baz")
-
-    return TestEnum
+    return EnumTester
 
 
 class TestCallbackManager:
     """Test the you_can_call_me_houdini.api.manager.CallbackManager object."""
 
-    def test___init__(self):
+    def test___init__(self) -> None:
         """Test object initialization."""
         # Force clear out any singleton instances that may have already been created.
         manager.CallbackManager._instances.clear()
@@ -51,68 +60,88 @@ class TestCallbackManager:
         assert inst is manager.CallbackManager()
 
     @pytest.mark.parametrize(
-        ("ui_available", "skip_no_ui", "expect_result", "test_name"),
+        ("ui_available", "skip_no_ui", "test_name", "callback_is_function_type", "expected_result_name"),
         [
-            (False, True, False, None),
-            (False, False, True, None),
-            (True, False, True, None),
-            (True, False, True, "test_name"),
+            (False, True, None, False, "<unknown>"),
+            (False, False, None, False, "<unknown>"),
+            (True, False, None, False, "<unknown>"),
+            (True, False, "test_name", False, "test_name"),
+            (True, False, None, True, "test_func"),
         ],
     )
     def test_add_callback(
         self,
-        mocker,
-        test_manager,
-        test_enum,
-        ui_available,
-        skip_no_ui,
-        expect_result,
-        test_name,
-    ):
+        mocker: MockerFixture,
+        test_manager: manager.CallbackManager,
+        test_enum: type[EnumTester],
+        ui_available: bool,
+        skip_no_ui: bool,
+        test_name: str | None,
+        callback_is_function_type: bool,
+        expected_result_name: str,
+    ) -> None:
         """Test CallbackManager.add_callback()."""
+        expect_result = not (skip_no_ui and not ui_available)
+
         mocker.patch("hou.isUIAvailable", return_value=ui_available)
 
-        def test_func():
+        def test_func():  # noqa: ANN202
             pass
+
+        class NoNameCallable:
+            def __init__(self):  # noqa: ANN204
+                pass
+
+            def __call__(self):  # noqa: ANN204
+                pass
 
         result = test_manager.add_callback(
             test_enum.FOO,
-            test_func,
+            test_func if callback_is_function_type else NoNameCallable,
             name=test_name,
             skip_no_ui=skip_no_ui,
         )
 
-        if expect_result:
-            assert result.name == test_name if test_name is not None else "test_func"
+        if result is None:
+            assert expect_result is False
 
         else:
-            assert result is None
+            assert result.name == expected_result_name
 
     @pytest.mark.parametrize(
-        ("tester", "event_enum", "enabled", "pass_args"),
+        ("context", "event_enum", "enabled", "pass_args"),
         [
             (pytest.raises(exceptions.InvalidEventTypeError), None, True, False),
             (
-                None,
+                nullcontext(),
                 HoudiniSessionEvent.NewScene,
                 False,
                 False,
             ),
             (
-                None,
+                nullcontext(),
                 HoudiniSessionEvent.NewScene,
                 True,
                 False,
             ),
             (
-                None,
+                nullcontext(),
                 HoudiniSessionEvent.NewScene,
                 True,
                 True,
             ),
         ],
     )
-    def test_emit(self, mocker, test_manager, test_enum, tester, event_enum, enabled, pass_args):
+    def test_emit(
+        self,
+        mocker: MockerFixture,
+        test_manager: manager.CallbackManager,
+        test_enum: type[EnumTester],
+        context: nullcontext | pytest.RaisesExc[exceptions.InvalidEventTypeError],
+        event_enum: HoudiniSessionEvent,
+        enabled: bool,
+        pass_args: bool,
+    ) -> None:
         """Test CallbackManager.emit()."""
         mock_func = mocker.MagicMock()
         mock_func.__name__ = "name"
@@ -128,10 +157,7 @@ class TestCallbackManager:
         if pass_args:
             test_args = {"dummy_arg": 123}
 
-        if tester is None:
-            tester = nullcontext()
-
-        with tester:
+        with context:
             test_manager.emit(event_enum, test_args)
 
         if pass_args:
@@ -148,7 +174,14 @@ class TestCallbackManager:
             (True, True),
         ],
     )
-    def test_get_callbacks_for_event(self, mocker, test_manager, test_enum, enabled, has_callbacks):
+    def test_get_callbacks_for_event(
+        self,
+        mocker: MockerFixture,
+        test_manager: manager.CallbackManager,
+        test_enum: type[EnumTester],
+        enabled: bool,
+        has_callbacks: bool,
+    ) -> None:
         """Test CallbackManager.get_callbacks_for_event()."""
         test_enum.FOO.value.enabled = enabled
 
@@ -164,7 +197,7 @@ class TestCallbackManager:
         else:
             assert result == []
 
-    def test_ignore_event_callbacks(self, test_manager, test_enum):
+    def test_ignore_event_callbacks(self, test_manager: manager.CallbackManager, test_enum: type[EnumTester]) -> None:
         """Test CallbackManager.ignore_event_callbacks()."""
         counter_args = {
             "c1": 0,
@@ -172,13 +205,13 @@ class TestCallbackManager:
             "c3": 0,
         }
 
-        def func1(scriptargs):
+        def func1(scriptargs):  # noqa: ANN001, ANN202
             scriptargs["c1"] += 1
 
-        def func2(scriptargs):
+        def func2(scriptargs):  # noqa: ANN001, ANN202
             scriptargs["c2"] += 1
 
-        def func3(scriptargs):
+        def func3(scriptargs):  # noqa: ANN001, ANN202
             scriptargs["c3"] += 1
 
         test_manager.add_callback(test_enum.FOO, func1)

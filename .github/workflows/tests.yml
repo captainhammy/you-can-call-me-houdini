@@ -19,7 +19,7 @@ jobs:
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup licensing
         uses: captainhammy/setup-hserver-action@v1
@@ -29,11 +29,11 @@ jobs:
           client_secret_key: ${{ secrets.SESI_SECRET_KEY }}
 
       - name: Install dependencies
-        run: python3 -m pip install tox tox-gh-actions
+        run: python3 -m pip install --group "github"
 
-      # Run tox tests (unit tests + static code analysis)
+      # Run static analysis tox tests
       - name: Test with tox
-        run: tox
+        run: tox -m static
 
       # Build package for rez testing
       - name: Build Package
@@ -55,7 +55,9 @@ jobs:
           # We actually don't want the package dir var set when we use hython to install the requirements
           # as it will just generate a lot of spam about missing requirements due to all the scripts
           # trying to execute on startup.
-          env --unset=HOUDINI_PACKAGE_DIR hython -m pip install -r requirements.txt -r test_requirements.txt
+          env --unset=HOUDINI_PACKAGE_DIR hython -m pip install --upgrade pip
+          env --unset=HOUDINI_PACKAGE_DIR hython -m pip install --group deps --group test
+          # Copy all the event scripts from the generic dir to the appropriate location for the build.
           cp -r src/houdini/pythonX.Ylibs src/houdini/python${_CONTAINER_PYTHON_VERSION}libs
           # The pytest setting for coverage percentage failure in pyproject.toml don't get along
           # with the fact that using the package .json file has HOUDINI_PATH set. If we create
@@ -64,6 +66,6 @@ jobs:
           hython -m pytest tests/
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

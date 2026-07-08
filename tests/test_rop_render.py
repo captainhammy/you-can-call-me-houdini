@@ -1,5 +1,11 @@
 """Tests for the you_can_call_me_houdini.rop_render module."""
 
+# Future
+from __future__ import annotations
+
+# Standard Library
+from typing import TYPE_CHECKING
+
 # Third Party
 import humanfriendly
 import pytest
@@ -9,6 +15,9 @@ import you_can_call_me_houdini.rop_render
 
 # Houdini
 import hou
+
+if TYPE_CHECKING:
+    from pytest_mock import MockerFixture
 
 pytestmark = pytest.mark.usefixtures("load_module_test_hip_file")
 
@@ -27,7 +36,7 @@ class TestRopRenderProcess:
             ("/out/alembic", False),
         ],
     )
-    def test_init(self, monkeypatch, node_path, has_output_parm):
+    def test_init(self, monkeypatch: pytest.MonkeyPatch, node_path: str, has_output_parm: bool) -> None:
         """Test object initialization/post initialization."""
         # Remove/alter items in the output parameter mapping to test expected behaviors.
         monkeypatch.delitem(you_can_call_me_houdini.rop_render._FILE_PARM_MAP, "Driver/comp")
@@ -48,7 +57,7 @@ class TestRopRenderProcess:
         assert process.has_post_write == bool(test_node.parm("postwrite") is not None)
 
     @pytest.mark.parametrize("has_output_parm", [False, True])
-    def test_pre_render(self, mocker, has_output_parm):
+    def test_pre_render(self, mocker: MockerFixture, has_output_parm: bool) -> None:
         """Test RopRenderProcess.pre_render()."""
         mock_emit = mocker.patch.object(you_can_call_me_houdini.rop_render.CallbackManager, "emit")
 
@@ -82,7 +91,7 @@ class TestRopRenderProcess:
             assert inst.frame_padding == mock_get_padding.return_value
 
     @pytest.mark.parametrize("has_output_parm", [False, True])
-    def test_pre_frame(self, mocker, has_output_parm):
+    def test_pre_frame(self, mocker: MockerFixture, has_output_parm: bool) -> None:
         """Test RopRenderProcess.pre_frame()."""
         mock_emit = mocker.patch.object(you_can_call_me_houdini.rop_render.CallbackManager, "emit")
 
@@ -120,7 +129,7 @@ class TestRopRenderProcess:
         )
 
     @pytest.mark.parametrize("has_output_parm", [False, True])
-    def test_post_frame(self, mocker, has_output_parm):
+    def test_post_frame(self, mocker: MockerFixture, has_output_parm: bool) -> None:
         """Test RopRenderProcess.post_frame()."""
         mock_emit = mocker.patch.object(you_can_call_me_houdini.rop_render.CallbackManager, "emit")
 
@@ -160,7 +169,7 @@ class TestRopRenderProcess:
             expected_args,
         )
 
-    def test_post_render(self, mocker):
+    def test_post_render(self, mocker: MockerFixture) -> None:
         """Test RopRenderProcess.post_render()."""
         mock_emit = mocker.patch.object(you_can_call_me_houdini.rop_render.CallbackManager, "emit")
 
@@ -190,7 +199,7 @@ class TestRopRenderProcess:
         )
 
     @pytest.mark.parametrize("has_output_parm", [False, True])
-    def test_post_write(self, mocker, has_output_parm):
+    def test_post_write(self, mocker: MockerFixture, has_output_parm: bool) -> None:
         """Test RopRenderProcess.post_write()."""
         mock_emit = mocker.patch.object(you_can_call_me_houdini.rop_render.CallbackManager, "emit")
 
@@ -226,7 +235,7 @@ class TestRopRenderFactory:
     """Test the you_can_call_me_houdini.rop_render.RopRenderFactory object."""
 
     @pytest.mark.parametrize("exists", [False, True])
-    def test_get_process_for_node(self, monkeypatch, mocker, exists):
+    def test_get_process_for_node(self, mocker: MockerFixture, exists: bool) -> None:
         """Test RopRenderFactory.get_process_for_node()."""
         mock_node = mocker.MagicMock(spec=hou.RopNode)
 
@@ -250,7 +259,7 @@ class TestRopRenderFactory:
         assert len(inst._node_processes) == 1
 
 
-def test__find_all_rop_instances():
+def test__find_all_rop_instances() -> None:
     """Test you_can_call_me_houdini.rop_render._find_all_rop_instances()."""
     result = you_can_call_me_houdini.rop_render._find_all_rop_instances()
 
@@ -269,7 +278,7 @@ def test__find_all_rop_instances():
         ("/out/test__get_frame_padding/test_no_frame/sopoutput", 1),
     ],
 )
-def test__get_frame_padding(parameter_path, expected):
+def test__get_frame_padding(parameter_path: str, expected: int) -> None:
     """Test you_can_call_me_houdini.rop_render._get_frame_padding()."""
     parameter = hou.parm(parameter_path)
 
@@ -278,7 +287,7 @@ def test__get_frame_padding(parameter_path, expected):
     assert result == expected
 
 
-def test_attach_rop_render_event(mocker):
+def test_attach_rop_render_event(mocker: MockerFixture) -> None:
     """Test you_can_call_me_houdini.rop_render.attach_rop_render_event()."""
     # Test a proper ROP node.
     mock_rop_node = mocker.MagicMock(spec=hou.RopNode)
@@ -291,7 +300,7 @@ def test_attach_rop_render_event(mocker):
     mock_non_rop_node.addRenderEventCallback.assert_not_called()
 
 
-def test_attach_rop_render_to_all_nodes(mocker):
+def test_attach_rop_render_to_all_nodes(mocker: MockerFixture) -> None:
     """Test you_can_call_me_houdini.rop_render.attach_rop_render_to_all_nodes()."""
     mock_rop1 = mocker.MagicMock(spec=hou.RopNode)
     mock_rop2 = mocker.MagicMock(spec=hou.RopNode)
@@ -319,7 +328,9 @@ def test_attach_rop_render_to_all_nodes(mocker):
         (None, False),
     ],
 )
-def test_handle_rop_render_event(mocker, out_test_node, render_type, has_post_write):
+def test_handle_rop_render_event(
+    mocker: MockerFixture, out_test_node: hou.RopNode, render_type: hou.ropRenderEventType, has_post_write: bool
+) -> None:
     """Test you_can_call_me_houdini.rop_render.handle_rop_render_event()."""
     mock_process = mocker.MagicMock(spec=you_can_call_me_houdini.rop_render.RopRenderProcess)
     mock_process.has_post_write = has_post_write
@@ -336,7 +347,7 @@ def test_handle_rop_render_event(mocker, out_test_node, render_type, has_post_wr
         mock_process.post_write.assert_called()
 
 
-def test_print_pre_render(mocker):
+def test_print_pre_render(mocker: MockerFixture) -> None:
     """Test you_can_call_me_houdini.rop_render.print_pre_render()."""
     mock_print = mocker.patch("builtins.print")
 
@@ -357,7 +368,7 @@ def test_print_pre_render(mocker):
         (1.1234, "27.962"),
     ],
 )
-def test_print_post_frame(mocker, scene_time, expected_frame):
+def test_print_post_frame(mocker: MockerFixture, scene_time: float, expected_frame: str) -> None:
     """Test you_can_call_me_houdini.rop_render.print_post_frame()."""
     mock_print = mocker.patch("builtins.print")
 
@@ -384,7 +395,7 @@ def test_print_post_frame(mocker, scene_time, expected_frame):
         None,
     ],
 )
-def test_print_post_write(mocker, output_path):
+def test_print_post_write(mocker: MockerFixture, output_path: str | None) -> None:
     """Test you_can_call_me_houdini.rop_render.print_post_write()."""
     mock_stat = mocker.MagicMock()
     mock_stat.st_size = 123456
@@ -410,7 +421,7 @@ def test_print_post_write(mocker, output_path):
         mock_print.assert_not_called()
 
 
-def test_print_post_render(mocker):
+def test_print_post_render(mocker: MockerFixture) -> None:
     """Test you_can_call_me_houdini.rop_render.print_post_render()."""
     mock_print = mocker.patch("builtins.print")
 

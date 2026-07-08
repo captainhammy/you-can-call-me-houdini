@@ -31,7 +31,7 @@ build_requires = [
 
 tests = {
     "unit": {
-        "command": "hython -m pytest tests",
+        "command": "hython -m pytest tests/",
         "requires": ["pytest", "pytest_cov", "pytest_houdini", "pytest_mock"],
     }
 }

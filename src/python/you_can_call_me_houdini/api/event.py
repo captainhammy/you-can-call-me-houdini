@@ -7,6 +7,7 @@ from __future__ import annotations
 import logging
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
+from types import FunctionType
 from typing import TYPE_CHECKING
 
 # You Can Call Me Houdini
@@ -32,7 +33,16 @@ class HoudiniEventEnum(Enum):
             function: The callback function.
             callback_args: The callback args.
         """
-        event_logger.debug("%s: %s", self, f"{function.__module__}.{function.__name__}")
+        msg = f"{function.__module__}"
+
+        if isinstance(function, FunctionType):
+            msg += f".{function.__name__}"
+
+        event_logger.debug(
+            "%s: %s",
+            self,
+            f"{msg}()",
+        )
 
 
 class HoudiniNodeEventEnum(HoudiniEventEnum):
@@ -48,10 +58,14 @@ class HoudiniNodeEventEnum(HoudiniEventEnum):
             function: The callback function.
             callback_args: The callback args.
         """
+        msg = f"{function.__module__}"
+        if isinstance(function, FunctionType):
+            msg += f".{function.__name__}"
+
         event_logger.debug(
             "%s: %s '%s'",
             self,
-            f"{function.__module__}.{function.__name__}()",
+            f"{msg}()",
             callback_args["node"].path(),
         )
 

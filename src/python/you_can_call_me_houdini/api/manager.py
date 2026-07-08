@@ -7,6 +7,7 @@ from __future__ import annotations
 import logging
 from contextlib import contextmanager
 from dataclasses import dataclass, field
+from types import FunctionType
 from typing import TYPE_CHECKING
 
 # Third Party
@@ -67,7 +68,8 @@ class CallbackManager(metaclass=Singleton):
 
         event_callbacks = self.callbacks.setdefault(event, [])
 
-        name = name or callback_function.__name__
+        if name is None:
+            name = callback_function.__name__ if isinstance(callback_function, FunctionType) else "<unknown>"
 
         callback = Callback(name, callback_function, enabled=enabled)
 
