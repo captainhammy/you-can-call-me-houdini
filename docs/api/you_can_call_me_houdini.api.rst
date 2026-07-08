@@ -25,6 +25,14 @@ you\_can\_call\_me\_houdini.api.event module
    :undoc-members:
    :show-inheritance:
 
+you\_can\_call\_me\_houdini.api.exceptions module
+-------------------------------------------------
+
+.. automodule:: you_can_call_me_houdini.api.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 you\_can\_call\_me\_houdini.api.logger module
 ---------------------------------------------
 

@@ -21,7 +21,7 @@ def run_123_cmd(event_args: dict) -> None:
     """Source and execute 123.cmd.
 
     Args:
-        event_args: The event related data.
+        event_args: The event-related data.
     """
     cmd_123 = hou.findFile("scripts/123.cmd")
 

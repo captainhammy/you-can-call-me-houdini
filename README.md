@@ -13,9 +13,9 @@ Please read the [documentation](https://you-can-call-me-houdini.readthedocs.io/e
 
 Currently, the following Houdini (and Python) versions are supported:
 
-- Houdini 19.5 (Python 3.9)
-- Houdini 20.0 (Python 3.10)
 - Houdini 20.5 (Python 3.11)
+- Houdini 21.0 (Python 3.11)
+- Houdini 22.0 (Python 3.13)
 
 Alternative Python builds are **not** supported.
 

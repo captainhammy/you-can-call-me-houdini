@@ -12,7 +12,7 @@ from you_can_call_me_houdini.api.event import (
 
 
 class HoudiniNodeEvent(HoudiniNodeEventEnum):
-    """Enum related to node specific events."""
+    """Enum related to node-specific events."""
 
     OnCreated = Event("onnodecreate", description="Event when a node is created")
     OnDeleted = Event("ondeleted", description="Event when a node is deleted")
@@ -70,17 +70,17 @@ class HoudiniSessionEvent(HoudiniEventEnum):
 
 
 class HoudiniStartupEvent(HoudiniEventEnum):
-    """Enum related to Houdini startup specific events."""
+    """Enum related to Houdini startup-specific events."""
 
     NoHipCore = Event("nohipcore")  # houdinicore.py, before NoHip
     NoHipFX = Event("nohipfx")  # 123.py, before NoHip
     NoHip = Event("nohip")  # 123.py / houdinicore.py
     Any = Event("anyhip")  # Any time 456 is run.
     HoudiniStarted = RunOnceEvent("houdinistarted")  # Runs only the first time 456.py is executed.
-    Ready = Event("ready")
+    Ready = Event("ready")  # ready.py
 
 
 class HoudiniUIEvent(HoudiniEventEnum):
     """Enum related to Houdini UI specific events."""
 
-    UIReady = Event("postuiopen")
+    UIReady = Event("postuiopen")  # uiready.py
