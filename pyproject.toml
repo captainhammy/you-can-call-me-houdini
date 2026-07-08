@@ -1,9 +1,15 @@
 [project]
 name = "you_can_call_me_houdini"
 
+description = "A basic framework for registering and executing callbacks associated with Houdini events"
+
+authors = [
+    {name = "Graham Thompson", email = "captainhammy@gmail.com"}
+]
+
 [dependency-groups]
     deps = ["humanfriendly", "python-singleton"]
-    docs = ["sphinx==8", "sphinx-rtd-theme", "sphinx-copybutton", "enum-tools[sphinx]"]
+    docs = ["sphinx==8", "sphinx-rtd-theme", "sphinx-copybutton", "enum-tools[sphinx]", "sphinx-pyproject", "dunamai"]
     docstrings = ["pydocstringformatter"]
     github = ["coverage", "tox"]
     isort = ["isort"]

@@ -64,7 +64,7 @@ class RopRenderProcess:
         """Emit a `RopRenderEvent.PreRender` with relevant data.
 
         Args:
-            event_args: The event related data.
+            event_args: The event-related data.
         """
         if self.output_parameter is not None:
             self.frame_padding = _get_frame_padding(self.output_parameter)
@@ -86,7 +86,7 @@ class RopRenderProcess:
         """Emit a `RopRenderEvent.PreFrame` with relevant data.
 
         Args:
-            event_args: The event related data.
+            event_args: The event-related data.
         """
         self.frame_start_time = time.time()
 
@@ -109,7 +109,7 @@ class RopRenderProcess:
         """Emit a `RopRenderEvent.PostFrame` with relevant data.
 
         Args:
-            event_args: The event related data.
+            event_args: The event-related data.
         """
         end_time = time.time()
         frame_time = end_time - self.frame_start_time
@@ -135,7 +135,7 @@ class RopRenderProcess:
         """Emit a `RopRenderEvent.PostRender` with relevant data.
 
         Args:
-            event_args: The event related data.
+            event_args: The event-related data.
         """
         end_time = time.time()
         render_time = end_time - self.render_start_time
@@ -156,7 +156,7 @@ class RopRenderProcess:
         """Emit a `RopRenderEvent.PostWrite` with relevant data.
 
         Args:
-            event_args: The event related data.
+            event_args: The event-related data.
         """
         args = {
             "process": self,
@@ -197,7 +197,7 @@ class RopRenderFactory(metaclass=Singleton):
 
 
 def _find_all_rop_instances() -> list[hou.RopNode]:
-    """Find a list of all Houdini nodes in the scene which are ROP nodes.
+    """Find a list of all Houdini nodes in the scene that are ROP nodes.
 
     Returns:
         A list of ROP node instances.
@@ -219,7 +219,7 @@ def _find_all_rop_instances() -> list[hou.RopNode]:
 
 
 def _find_all_rop_types() -> list[hou.OpNodeType]:
-    """Find a list of all Houdini node types which are ROPs.
+    """Find a list of all Houdini node types that are ROPs.
 
     Returns:
         A list of all the found ROP node types.
@@ -233,7 +233,7 @@ def _find_all_rop_types() -> list[hou.OpNodeType]:
     # We'll do extra confirmation elsewhere to ensure that instances are in fact hou.RopNodes, this just helps
     # to greatly narrow down the types we need to check.
     for category in hou.nodeTypeCategories().values():
-        # Skip this as we've already done it above and the logic doesn't apply to actual ROP nodes.
+        # Skip this as we've already done it above, and the logic doesn't apply to actual ROP nodes.
         if category == hou.ropNodeTypeCategory():
             continue
 
@@ -260,8 +260,8 @@ def _get_frame_padding(parameter: hou.Parm) -> int:
         # we're executing a node inside a digital asset that's using an expression.
         path_value = parameter.getReferencedParm().unexpandedString()
 
-    # There might still be some expression magic going on though so in the event that
-    # we can't get the unexpanded value we'll just skip.
+    # There might still be some expression magic happening, so in the event that
+    # we can't get the unexpanded value, we'll just skip.
     except hou.OperationFailed:
         result = None
 
@@ -336,7 +336,7 @@ def handle_rop_render_event(node: hou.RopNode, render_event: hou.ropRenderEventT
 
 
 def print_pre_render(event_args: dict) -> None:
-    """Print the pre render output.
+    """Print the pre-render output.
 
     Args:
         event_args: The event args.
@@ -345,7 +345,7 @@ def print_pre_render(event_args: dict) -> None:
 
 
 def print_post_frame(event_args: dict) -> None:
-    """Print the post frame output.
+    """Print the post-frame output.
 
     Args:
         event_args: The event args.
@@ -363,7 +363,7 @@ def print_post_frame(event_args: dict) -> None:
 
 
 def print_post_write(event_args: dict) -> None:
-    """Print the post file write output.
+    """Print the post-file write output.
 
     Args:
         event_args: The event args.
@@ -379,7 +379,7 @@ def print_post_write(event_args: dict) -> None:
 
 
 def print_post_render(event_args: dict) -> None:
-    """Print the post render output.
+    """Print the post-render output.
 
     Args:
         event_args: The event args.

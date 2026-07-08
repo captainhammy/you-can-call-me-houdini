@@ -27,9 +27,9 @@ The ``456.py`` script will emit several callbacks when run:
 
     - :py:enum:mem:`~you_can_call_me_houdini.events.HoudiniStartupEvent.HoudiniStarted` (run only the first time 456.py is run)
     - When 456 is run with a hip file
-        - :py:enum:mem:`~you_can_call_me_houdini.events.HoudiniStartupEvent.SceneLoaded`
+        - :py:enum:mem:`~you_can_call_me_houdini.events.HoudiniSessionEvent.SceneLoaded`
     - When 456 is run without a hip file
-        - :py:enum:mem:`~you_can_call_me_houdini.events.HoudiniStartupEvent.NewScene`
+        - :py:enum:mem:`~you_can_call_me_houdini.events.HoudiniSessionEvent.NewScene`
     - :py:enum:mem:`~you_can_call_me_houdini.events.HoudiniStartupEvent.Any` (run every time 456.py is run)
 
 

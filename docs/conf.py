@@ -1,18 +1,31 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
+"""Configure documentation for Sphinx."""
 
-# -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-
-import os
+# Standard Library
+import pathlib
 import sys
-sys.path.insert(0, os.path.abspath("../src/python"))
+from datetime import date
 
-project = 'you-can-call-me-houdini'
-copyright = '2023, Graham Thompson'
-author = 'Graham Thompson'
+
+# Third Party
+from dunamai import Pattern, Version
+from sphinx_pyproject import SphinxConfig
+
+sys.path.insert(0, pathlib.Path("../src/python").resolve().as_posix())
+
+try:
+    version = Version.from_git(Pattern.DefaultUnprefixed, strict=True).serialize()
+
+except RuntimeError:
+    version = "0.1.0"
+
+config = SphinxConfig(
+    "../pyproject.toml",
+    globalns=globals(),
+    config_overrides={"version": version}
+)
+
+project = config.name.replace("_", "-")
+copyright = f"{date.today().year}, {config.author}"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -38,8 +51,7 @@ intersphinx_mapping = {
 autodoc_mock_imports = ["hou"]
 autodoc_member_order = "bysource"
 
-# -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+
+nitpicky = True
