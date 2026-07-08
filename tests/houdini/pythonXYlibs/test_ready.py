@@ -1,5 +1,11 @@
 """Test the ready.py script."""
 
+# Future
+from __future__ import annotations
+
+# Standard Library
+from typing import TYPE_CHECKING
+
 # Third Party
 import pytest
 
@@ -7,13 +13,16 @@ import pytest
 from you_can_call_me_houdini.api.manager import CallbackManager
 from you_can_call_me_houdini.events import HoudiniStartupEvent
 
+if TYPE_CHECKING:
+    from pytest_mock import MockerFixture
+
 pytestmark = pytest.mark.usefixtures("add_scripts_python")
 
 
 # Tests
 
 
-def test_ready(mocker):
+def test_ready(mocker: MockerFixture) -> None:
     """Test the ready.py script."""
     mock_emit = mocker.patch.object(CallbackManager, "emit")
 

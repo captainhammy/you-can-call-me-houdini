@@ -1,7 +1,11 @@
 """Tests for the you_can_call_me_houdini.api.stats module."""
 
+# Future
+from __future__ import annotations
+
 # Standard Library
 import time
+from typing import TYPE_CHECKING
 
 # Third Party
 import pytest
@@ -9,13 +13,16 @@ import pytest
 # You Can Call Me Houdini
 from you_can_call_me_houdini.api import stats
 
+if TYPE_CHECKING:
+    from pytest_mock import MockerFixture
+
 # Tests
 
 
 class TestEventStats:
     """Test the you_can_call_me_houdini.api.stats.EventStats object."""
 
-    def test___enter__(self):
+    def test___enter__(self) -> None:
         """Test EventStats.__enter__()."""
         inst = stats.EventStats("test")
 
@@ -26,7 +33,7 @@ class TestEventStats:
         assert inst.last_started > 0
 
     @pytest.mark.parametrize("print_report", [False, True])
-    def test___exit__(self, mocker, print_report):
+    def test___exit__(self, mocker: MockerFixture, print_report: bool) -> None:
         """Test EventStats.__exit__()."""
         mock_print = mocker.patch.object(stats.EventStats, "print_report")
 
@@ -53,7 +60,7 @@ class TestEventStats:
         assert inst.total_time > 0.75
         assert inst.run_count == 2
 
-    def test_print_report(self, mocker):
+    def test_print_report(self, mocker: MockerFixture) -> None:
         """Test EventStats.print_report()."""
         inst = stats.EventStats("test")
 
@@ -62,7 +69,7 @@ class TestEventStats:
         inst.print_report()
         assert mock_print.call_count == 3
 
-    def test_reset(self, mocker):
+    def test_reset(self) -> None:
         """Test EventStats.reset()."""
         inst = stats.EventStats("test")
 

@@ -18,7 +18,7 @@ def version() -> str:
 authors = ["graham thompson"]
 
 requires = [
-    "houdini-20.5+<21.5",
+    "houdini-20.5+<22.1",
     "humanfriendly",
     "python_singleton",
 ]
@@ -31,7 +31,7 @@ build_requires = [
 
 tests = {
     "unit": {
-        "command": "hython -m pytest tests",
+        "command": "hython -m pytest tests/",
         "requires": ["pytest", "pytest_cov", "pytest_houdini", "pytest_mock"],
     }
 }

@@ -16,6 +16,7 @@ from __future__ import annotations
 # Standard Library
 import importlib
 import sys
+from typing import TYPE_CHECKING
 
 # Third Party
 import pytest
@@ -27,6 +28,11 @@ from you_can_call_me_houdini.api import constants, manager
 # Houdini
 import hou
 
+if TYPE_CHECKING:
+    from unittest.mock import MagicMock
+
+    from pytest_mock import MockerFixture
+
 # Ensure we're getting things from our location and not $HFS.
 pytestmark = pytest.mark.usefixtures("add_pythonxylibs")
 
@@ -35,7 +41,7 @@ pytestmark = pytest.mark.usefixtures("add_pythonxylibs")
 
 
 @pytest.fixture
-def mock_nodegraphutils(monkeypatch, mocker):
+def mock_nodegraphutils(monkeypatch: pytest.MonkeyPatch, mocker: MockerFixture) -> MagicMock:
     """Mock nodegraphutils which can't be imported when running tests via Hython."""
     mocked_nodegraphutils = mocker.MagicMock()
 
@@ -45,7 +51,7 @@ def mock_nodegraphutils(monkeypatch, mocker):
 
 
 @pytest.fixture
-def mock_nodegraphdisplay(monkeypatch, mocker):
+def mock_nodegraphdisplay(monkeypatch: pytest.MonkeyPatch, mocker: MockerFixture) -> MagicMock:
     """Mock nodegraphdisplay which can't be imported when running tests via Hython."""
     mocked_nodegraphdisplay = mocker.MagicMock()
 
@@ -58,7 +64,9 @@ def mock_nodegraphdisplay(monkeypatch, mocker):
 
 
 @pytest.mark.parametrize("callback_handled", [False, True])
-def test__execute_keyboard_callbacks(mocker, mock_nodegraphutils, mock_nodegraphdisplay, callback_handled):
+def test__execute_keyboard_callbacks(
+    mocker: MockerFixture, mock_nodegraphutils: MagicMock, mock_nodegraphdisplay: MagicMock, callback_handled: bool
+) -> None:
     """Test nodegraphhooks._execute_keyboard_callbacks()."""
     import nodegraphhooks
 
@@ -67,7 +75,7 @@ def test__execute_keyboard_callbacks(mocker, mock_nodegraphutils, mock_nodegraph
     mock_event = mocker.MagicMock(spec=nodegraphhooks.KeyboardEvent)
     mock_pending = mocker.MagicMock(spec=list)
 
-    def test_callback(scriptargs):
+    def test_callback(scriptargs):  # noqa: ANN001, ANN202
         if callback_handled:
             scriptargs[constants.KEYBOARD_EVENT_HANDLED] = True
 
@@ -91,7 +99,13 @@ def test__execute_keyboard_callbacks(mocker, mock_nodegraphutils, mock_nodegraph
         ("parentkeyhit", None),
     ],
 )
-def test__handle_paste_event(mocker, mock_nodegraphutils, mock_nodegraphdisplay, event_type, mousepos):
+def test__handle_paste_event(
+    mocker: MockerFixture,
+    mock_nodegraphutils: MagicMock,
+    mock_nodegraphdisplay: MagicMock,
+    event_type: str,
+    mousepos: hou.Vector2 | None,
+) -> None:
     """Test nodegraphhooks._handle_paste_event()."""
     mock_emit = mocker.patch.object(manager.CallbackManager, "emit")
 
@@ -128,7 +142,12 @@ def test__handle_paste_event(mocker, mock_nodegraphutils, mock_nodegraphdisplay,
 
 
 @pytest.mark.parametrize("houdini_version", [(20, 0, 123), (19, 5, 456)])
-def test__is_paste_event(mocker, mock_nodegraphutils, mock_nodegraphdisplay, houdini_version):
+def test__is_paste_event(
+    mocker: MockerFixture,
+    mock_nodegraphutils: MagicMock,
+    mock_nodegraphdisplay: MagicMock,
+    houdini_version: tuple[int, int, int],
+) -> None:
     """Test nodegraphhooks._is_paste_event()."""
     import nodegraphhooks
 
@@ -152,14 +171,14 @@ def test__is_paste_event(mocker, mock_nodegraphutils, mock_nodegraphdisplay, hou
     ],
 )
 def test_createEventHandler(
-    mocker,
-    mock_nodegraphutils,
-    mock_nodegraphdisplay,
-    is_keyboard_event,
-    is_known_type,
-    is_paste_event,
-    expected,
-):
+    mocker: MockerFixture,
+    mock_nodegraphutils: MagicMock,
+    mock_nodegraphdisplay: MagicMock,
+    is_keyboard_event: bool,
+    is_known_type: bool,
+    is_paste_event: bool,
+    expected: bool,
+) -> None:
     """Test nodegraphhooks.createEventHandler()."""
     import nodegraphhooks
 

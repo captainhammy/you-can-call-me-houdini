@@ -7,7 +7,8 @@ from __future__ import annotations
 import logging
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable
+from types import FunctionType
+from typing import TYPE_CHECKING
 
 # Third Party
 from singleton import Singleton
@@ -21,7 +22,7 @@ from you_can_call_me_houdini.api.event import HoudiniEventEnum
 import hou
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
+    from collections.abc import Callable, Generator
 
 
 # Classes
@@ -67,7 +68,8 @@ class CallbackManager(metaclass=Singleton):
 
         event_callbacks = self.callbacks.setdefault(event, [])
 
-        name = name or callback_function.__name__
+        if name is None:
+            name = callback_function.__name__ if isinstance(callback_function, FunctionType) else "<unknown>"
 
         callback = Callback(name, callback_function, enabled=enabled)
 

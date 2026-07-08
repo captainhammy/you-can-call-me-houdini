@@ -1,5 +1,8 @@
 """Fixtures for testing houdini/pythonX.Ylibs code."""
 
+# Future
+from __future__ import annotations
+
 # Standard Library
 import os
 import pathlib
@@ -12,7 +15,7 @@ import pytest
 
 
 @pytest.fixture
-def add_pythonxylibs(monkeypatch):
+def add_pythonxylibs(monkeypatch: pytest.MonkeyPatch) -> None:
     """Add the appropriate pythonX.Ylibs folder to the start of sys.path."""
     if "HOUDINI_PACKAGE_TESTING" in os.environ:
         libs_dir = (
@@ -28,7 +31,7 @@ def add_pythonxylibs(monkeypatch):
 
 
 @pytest.fixture
-def add_scripts_python(monkeypatch):
+def add_scripts_python(monkeypatch: pytest.MonkeyPatch) -> None:
     """Add the houdini/scripts/python to the start of sys.path."""
     if "HOUDINI_PACKAGE_TESTING" in os.environ:
         python_dir = pathlib.Path(os.environ["REZ_YOU_CAN_CALL_ME_HOUDINI_ROOT"]) / "houdini" / "scripts" / "python"

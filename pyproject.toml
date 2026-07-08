@@ -1,6 +1,81 @@
-[tool.pytest.ini_options]
-    pythonpath = "src"
-    addopts = "--cov --cov-report=html --cov-report=xml --cov-fail-under=100 --color=yes"
+[project]
+name = "you_can_call_me_houdini"
+
+[dependency-groups]
+    deps = ["humanfriendly", "python-singleton"]
+    docs = ["sphinx==8", "sphinx-rtd-theme", "sphinx-copybutton", "enum-tools[sphinx]"]
+    docstrings = ["pydocstringformatter"]
+    github = ["coverage", "tox"]
+    isort = ["isort"]
+    ruff = ["ruff"]
+    test = ["pytest", "pytest-cov", "pytest-datadir", "pytest-houdini", "pytest-mock"]
+    ty = ["ty"]
+
+[tool.tox]
+    env_list = ["run-tests-rez", "run-tests-json", "ruff-check", "ruff-format-check", "isort-check", "ty", "docstring-check"]
+    labels = {test = ["run-tests-rez", "run-tests-json"], static = ["ruff-check", "ruff-format-check", "isort-check", "ty", "docstring-check"], fix = ["ruff-format-fix", "isort-run", "docstring-run"] }
+    no_package = true
+
+    [tool.tox.env.run-tests-rez]
+        allowlist_externals = ["echo", "rez"]
+        commands = [["rez", "test", "{[project]name}"]]
+        commands_post = [["echo", "View test coverage report at file://{toxinidir}/coverage_html_report/index.html"]]
+
+    [tool.tox.env.run-tests-json]
+        allowlist_externals = ["hython", "rm", "touch"]
+        dependency_groups = ["deps", "test"]
+        set_env = {PYTHONPATH = "{envsitepackagesdir}", HOUDINI_PACKAGE_DIR = "{toxinidir}"}
+        # Touch 'pytest.ini' so that it will override the options in this file. If we don't,
+        # The coverage failure based on percentage will fail due to Houdini loading things
+        # before test execution.
+        commands_pre = [["touch", "pytest.ini"]]
+        commands = [["hython", "-m", "pytest", "tests/"]]
+        # Remove the temp file.
+        commands_post = [["rm", "pytest.ini"]]
+
+    [tool.tox.env.ruff-check]
+        dependency_groups = ["ruff"]
+        commands = [[ "ruff", "check", "--preview", "src/", "tests/"]]
+
+    [tool.tox.env.ruff-format-check]
+        dependency_groups = ["ruff"]
+        commands = [[ "ruff", "format", "--preview", "--check", "--diff", "src/", "tests/"]]
+
+    [tool.tox.env.ruff-format-fix]
+        dependency_groups = ["ruff"]
+        commands = [[ "ruff", "format", "--preview", "src/", "tests/"]]
+
+    [tool.tox.env.isort-check]
+        dependency_groups = ["isort"]
+        commands = [[ "isort", "--check", "src/", "tests/"]]
+
+    [tool.tox.env.isort-run]
+        dependency_groups = ["isort"]
+        commands = [[ "isort", "src/", "tests/"]]
+
+    [tool.tox.env.ty]
+        dependency_groups = ["deps", "ty", "test"]
+        commands = [[ "ty", "check", "src/", "tests/"]]
+
+    [tool.tox.env.docstring-check]
+        dependency_groups = ["docstrings"]
+        commands = [[ "pydocstringformatter", "--exit-code", "src/"]]
+
+    [tool.tox.env.docstring-run]
+        dependency_groups = ["docstrings"]
+        commands = [[ "pydocstringformatter", "--write", "src/"]]
+
+    [tool.tox.env.docs]
+        allowlist_externals = ["echo"]
+        dependency_groups = ["deps", "docs"]
+        commands = [
+            ["sphinx-apidoc", "-o", "docs/api", "src/python"],
+            ["sphinx-build", "-b", "html", "-d", "{envtmpdir}/doctrees", "docs/", "{envtmpdir}/html"]
+        ]
+        commands_post = [["echo", "Docs available at file://{envtmpdir}/html/index.html"]]
+
+[tool.pytest]
+    addopts = ["--cov", "--cov-report=html", "--cov-report=xml", "--cov-fail-under=100", "--color=yes"]
 
 [tool.isort]
     profile = "black"
@@ -15,53 +90,30 @@
     dedup_headings = true
     indented_import_headings = false
 
-[tool.mypy]
-    disallow_incomplete_defs = true
-    disallow_untyped_calls = true
-    disallow_untyped_defs = true
-    files = "src"
-    mypy_path = "src"
-    ignore_missing_imports = true
-    [[tool.mypy.overrides]]
-        module = "hou.*"
-        ignore_missing_imports = true
+[tool.ty]
+    [tool.ty.analysis]
+        allowed-unresolved-imports = ["hou", "canvaseventtypes", "nodegraphdisplay", "nodegraphutils"]
+
+    [tool.ty.environment]
+        root = ["./src/python", "./src/houdini/scripts", "./src/houdini/scripts/python", "./src/houdini/pythonX.Ylibs"]
 
 [tool.coverage]
-
-    [tool.coverage.run]
-        branch = true
-        source =  ["you_can_call_me_houdini", "externaldragdrop", "nodegraphhooks", "pythonrc", "ready", "uiready"]
-        omit = [
-            "*version.py",
-        ]
-        disable_warnings = [
-            "module-not-imported",
-            "module-not-measured",
-        ]
+    [tool.coverage.html]
+        directory = "coverage_html_report"
 
     [tool.coverage.report]
         exclude_lines = [
             # Have to re-enable the standard pragma
             "pragma: no cover",
-
-            # Don't complain about missing debug-only code:
             "def __repr__",
-            "if self.debug",
             "if TYPE_CHECKING",
-
-            # Don't complain if tests don't hit defensive assertion code:
-            "raise AssertionError",
-            "raise NotImplementedError",
-
-            # Don't complain if non-runnable code isn't run:
-            "if 0:",
-            "if __name__ == .__main__.:",
         ]
         ignore_errors = true
         skip_empty = true
 
-    [tool.coverage.html]
-        directory = "coverage_html_report"
+    [tool.coverage.run]
+        branch = true
+        source =  ["you_can_call_me_houdini", "externaldragdrop", "nodegraphhooks", "pythonrc", "ready", "uiready"]
 
 [tool.pydocstringformatter]
     max-summary-lines = 2
@@ -88,6 +140,8 @@
             "LOG",  #  flake8-logging
             "BLE",  # flake8-blind-except
             "A",  # flake8-builtins
+            "ANN",  # flake8-annotations
+            "Q", # flake8-quotes
             "C4",  # flake8-comprehensions
             "RET",  # flake8-return
             "SIM",  # flake8-simplify
@@ -102,6 +156,8 @@
             "D104",  # Missing docstring in public module
             "D105",  # Missing docstring in magic method
             "D107",  # Missing docstring in __init__
+            "FBT001",  # Boolean type hint
+            "I001",  # Import ordering
         ]
 
     [tool.ruff.lint.per-file-ignores]
@@ -109,6 +165,7 @@
             "E402",  # Module level import not at top of file
         ]
         "tests/*.py" = [
+            "N999",  # Invalid module name
             "PLC0415",  # Import not at top level
             "PLC2801",  # Unnecessary dunder call
             "PLR0913",  # Too many args for function

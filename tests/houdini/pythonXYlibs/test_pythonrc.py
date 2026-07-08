@@ -1,7 +1,11 @@
 """Test the pythonrc.py script."""
 
+# Future
+from __future__ import annotations
+
 # Standard Library
 import importlib
+from typing import TYPE_CHECKING
 
 # Third Party
 import pytest
@@ -10,6 +14,9 @@ import pytest
 from you_can_call_me_houdini import events
 from you_can_call_me_houdini.rop_render import print_post_frame
 
+if TYPE_CHECKING:
+    from pytest_mock import MockerFixture
+
 pytestmark = pytest.mark.usefixtures("add_scripts_python")
 
 
@@ -17,7 +24,7 @@ pytestmark = pytest.mark.usefixtures("add_scripts_python")
 
 
 @pytest.mark.parametrize("disable_rop_progress", [False, True])
-def test_pythonrc(monkeypatch, mocker, disable_rop_progress):
+def test_pythonrc(monkeypatch: pytest.MonkeyPatch, mocker: MockerFixture, disable_rop_progress: bool) -> None:
     """Test the pythonrc.py module."""
     mock_manager = mocker.patch("you_can_call_me_houdini.api.manager.CallbackManager")
 
